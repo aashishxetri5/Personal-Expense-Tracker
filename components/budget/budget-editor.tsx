@@ -9,13 +9,14 @@ import { Money } from "@/components/money";
 import { useMoney } from "@/components/providers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, ColorDot } from "@/components/ui/display";
+import { Badge } from "@/components/ui/badge";
+import { ColorDot } from "@/components/ui/color-dot";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ConfirmDialog } from "@/components/ui/primitives";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { copyBudget, saveBudget } from "@/lib/actions/budget";
 import type { BudgetLine } from "@/lib/calculations/budget";
-import { round2 } from "@/lib/format";
+import { parseAmountInput, round2 } from "@/lib/format";
 import { addMonths, formatMonthLabel, parseMonthKey, toMonthKey } from "@/lib/month";
 import type { CategoryDTO } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -26,11 +27,6 @@ const KIND_SECTIONS: { kind: CategoryDTO["kind"]; label: string; hint: string }[
   { kind: "INVESTMENT", label: "Investments", hint: "Money moved into investments, not spent" },
   { kind: "SAVINGS", label: "Savings", hint: "Money moved into savings goals" },
 ];
-
-function parseAmount(value: string): number {
-  const parsed = Number(value.replace(/,/g, "").trim());
-  return Number.isFinite(parsed) && parsed > 0 ? round2(parsed) : 0;
-}
 
 /**
  * The plan for one month.
@@ -96,17 +92,17 @@ export function BudgetEditor({
   }, [buildDraft, defaultMonthlyIncome, hasBudget, incomeTarget, note]);
 
   const plannedTotal = React.useMemo(
-    () => round2(Object.values(draft).reduce((sum, value) => sum + parseAmount(value), 0)),
+    () => round2(Object.values(draft).reduce((sum, value) => sum + parseAmountInput(value), 0)),
     [draft],
   );
-  const incomeValue = parseAmount(income);
+  const incomeValue = parseAmountInput(income);
   const unallocated = round2(incomeValue - plannedTotal);
 
   const dirty = React.useMemo(() => {
     if (String(incomeTarget) !== String(incomeValue)) return true;
     if ((note ?? "") !== noteValue) return true;
     return categories.some(
-      (category) => (plannedByCategory.get(category.id) ?? 0) !== parseAmount(draft[category.id] ?? ""),
+      (category) => (plannedByCategory.get(category.id) ?? 0) !== parseAmountInput(draft[category.id] ?? ""),
     );
   }, [categories, draft, income, incomeTarget, incomeValue, note, noteValue, plannedByCategory]);
 
@@ -117,7 +113,7 @@ export function BudgetEditor({
       incomeTarget: incomeValue,
       note: noteValue,
       items: categories
-        .map((category) => ({ categoryId: category.id, plannedAmount: parseAmount(draft[category.id] ?? "") }))
+        .map((category) => ({ categoryId: category.id, plannedAmount: parseAmountInput(draft[category.id] ?? "") }))
         .filter((item) => item.plannedAmount > 0),
     });
     setSaving(false);
@@ -128,7 +124,7 @@ export function BudgetEditor({
     }
     toast.success(`${formatMonthLabel(month)} budget saved`, {
       description: `${money.format(plannedTotal)} planned across ${
-        categories.filter((c) => parseAmount(draft[c.id] ?? "") > 0).length
+        categories.filter((c) => parseAmountInput(draft[c.id] ?? "") > 0).length
       } categories`,
     });
   };
@@ -197,7 +193,7 @@ export function BudgetEditor({
           <CardContent className="space-y-1">
             {section.items.map((category) => {
               const actual = actualByCategory.get(category.id) ?? 0;
-              const planned = parseAmount(draft[category.id] ?? "");
+              const planned = parseAmountInput(draft[category.id] ?? "");
               const over = planned > 0 && actual > planned;
 
               return (

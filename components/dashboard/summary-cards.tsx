@@ -12,7 +12,8 @@ import {
 
 import { Money } from "@/components/money";
 import { Card } from "@/components/ui/card";
-import { Popover, PopoverContent, PopoverTrigger, Progress } from "@/components/ui/primitives";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
 import type { MonthlySummary } from "@/lib/calculations/ledger";
 import { formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";

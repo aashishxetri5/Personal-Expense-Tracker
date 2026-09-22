@@ -3,8 +3,10 @@
 import * as React from "react";
 
 import { Money } from "@/components/money";
-import { Badge, ColorDot, EmptyState } from "@/components/ui/display";
-import { Progress } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/badge";
+import { ColorDot } from "@/components/ui/color-dot";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Progress } from "@/components/ui/progress";
 import { useChartTheme } from "@/components/charts/chart-kit";
 import type { BudgetLine } from "@/lib/calculations/budget";
 import { formatPercent } from "@/lib/format";
