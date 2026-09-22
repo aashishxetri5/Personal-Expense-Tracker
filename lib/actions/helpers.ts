@@ -4,36 +4,36 @@ import { z } from "zod";
 import { actionError, flattenIssues, type ActionResult } from "@/lib/validations/common";
 
 /**
- * Financial data is cross-cutting: one transaction changes the dashboard, the
- * budget, the fund balances, the reports and the net-worth page at once. Rather
- * than sprinkle ad-hoc revalidation calls, every mutation refreshes the whole
- * authenticated tree. The pages are server-rendered and cheap, and this removes
- * an entire class of "the number did not update" bugs.
+ * Refreshes every screen after a mutation. Financial data is cross-cutting, so
+ * one transaction changes the dashboard, budget, funds and reports at once.
  *
- * `refresh()` re-renders the route the user is looking at, so the new figures
- * appear without a page reload. `revalidatePath` additionally clears cached
- * data beneath the app layout, which is what the export route handlers read.
+ * @returns Nothing; failures outside a request scope are ignored.
  */
-export function revalidateFinance() {
+export function revalidateFinance(): void {
   try {
+    // `refresh` re-renders the route the user is on; `revalidatePath` clears
+    // cached data beneath the layout, which the export handlers read.
     refresh();
     revalidatePath("/", "layout");
   } catch (error) {
-    // Both need a request scope. When an action is called from a script (the
-    // seed, the verification harness) there is none, and the throw would
-    // otherwise turn an already-committed write into a reported failure.
-    // Inside the app this branch is unreachable.
+    // Both need a request scope. Scripts have none, and without this guard an
+    // already-committed write would be reported as a failure.
     if (process.env.NODE_ENV !== "production") {
       console.warn("Skipped revalidation outside a request scope.", (error as Error).message);
     }
   }
 }
 
-/** Parse input with Zod, returning the flat field errors forms expect. */
-export function parseInput<T extends z.ZodType>(
-  schema: T,
-  input: unknown,
-): { ok: true; data: z.infer<T> } | { ok: false; result: ActionResult<never> } {
+type ParseOutcome<T> = { ok: true; data: T } | { ok: false; result: ActionResult<never> };
+
+/**
+ * Validates untrusted input and shapes failures into per-field errors.
+ *
+ * @param schema - Zod schema describing the expected input.
+ * @param input - The unvalidated value received from the client.
+ * @returns The parsed data, or a ready-to-return error result.
+ */
+export function parseInput<T extends z.ZodType>(schema: T, input: unknown): ParseOutcome<z.infer<T>> {
   const parsed = schema.safeParse(input);
   if (parsed.success) return { ok: true, data: parsed.data };
 
@@ -44,8 +44,12 @@ export function parseInput<T extends z.ZodType>(
 }
 
 /**
- * Convert a thrown database error into a message worth showing a human.
- * Prisma error codes are deliberately translated rather than leaked.
+ * Translates a thrown database error into a message worth showing a person,
+ * rather than leaking a Prisma error code.
+ *
+ * @param error - The caught error.
+ * @param fallback - Message used when the cause is not recognised.
+ * @returns A failed action result.
  */
 export function toActionError(error: unknown, fallback: string): ActionResult<never> {
   const code = (error as { code?: string } | null)?.code;
@@ -59,4 +63,17 @@ export function toActionError(error: unknown, fallback: string): ActionResult<ne
 
   console.error(fallback, error);
   return actionError(fallback);
+}
+
+/**
+ * Computes the sort position for a newly created row.
+ *
+ * @param findLast - Returns the highest-sorted existing row, or null.
+ * @returns One past the current maximum, or 0 when there are none.
+ */
+export async function nextSortOrder(
+  findLast: () => Promise<{ sortOrder: number } | null>,
+): Promise<number> {
+  const last = await findLast();
+  return (last?.sortOrder ?? -1) + 1;
 }
