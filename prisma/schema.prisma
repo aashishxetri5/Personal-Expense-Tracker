@@ -1,0 +1,374 @@
+// Personal Finance Manager — Prisma schema
+//
+// Design notes
+// ------------
+// * `Transaction` is the single source of truth for every rupee that moves.
+//   Future-fund balances, savings-goal progress and investment totals are all
+//   derived from it, so the ledger can never drift from the summaries.
+// * Budgets are stored per month (`MonthlyBudget` + `BudgetItem`). Editing
+//   October never rewrites September — historical integrity is structural,
+//   not a convention.
+// * Everything hangs off `User` so multi-user auth can be added later without
+//   reshaping the data model.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+/// How a transaction affects the books.
+///   INCOME     money in
+///   EXPENSE    money consumed. If linked to a future fund or savings goal it
+///              is financed from that reserve rather than the month budget.
+///   INVESTMENT money moved into an investment (not spending)
+///   TRANSFER   money moved without being consumed: into a future fund, into a
+///              savings goal, or between accounts.
+enum TransactionType {
+  INCOME
+  EXPENSE
+  INVESTMENT
+  TRANSFER
+}
+
+/// What a category represents. Drives how its budget line is evaluated.
+enum CategoryKind {
+  INCOME
+  EXPENSE
+  INVESTMENT
+  SAVINGS
+  FUTURE_FUND
+}
+
+enum AccountKind {
+  CASH
+  BANK
+  WALLET
+  CARD
+  OTHER
+}
+
+enum SavingsGoalKind {
+  EMERGENCY
+  GENERAL
+}
+
+enum InvestmentKind {
+  SIP
+  MUTUAL_FUND
+  STOCKS
+  FIXED_DEPOSIT
+  GOLD
+  RETIREMENT
+  OTHER
+}
+
+enum NetWorthEntryKind {
+  ASSET
+  LIABILITY
+}
+
+// ---------------------------------------------------------------------------
+// Core
+// ---------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(cuid())
+  email     String?  @unique
+  name      String   @default("You")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  settings          UserSettings?
+  accounts          Account[]
+  categories        Category[]
+  transactions      Transaction[]
+  monthlyBudgets    MonthlyBudget[]
+  futureFunds       FutureFund[]
+  savingsGoals      SavingsGoal[]
+  investments       Investment[]
+  netWorthSnapshots NetWorthSnapshot[]
+
+  @@map("users")
+}
+
+model UserSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// ISO 4217 code. Defaults to NPR, but nothing is hardcoded to Nepal.
+  currency             String  @default("NPR")
+  locale               String  @default("en-NP")
+  defaultMonthlyIncome Decimal @default(0) @db.Decimal(14, 2)
+  /// Set when the demo dataset is loaded so it can be removed cleanly.
+  demoDataLoaded       Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+/// An account / payment method: Cash, Bank, eSewa, Khalti, Card…
+/// Deliberately light for v1, but shaped so per-account balances can be layered
+/// on later without migrating the transaction table.
+model Account {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  kind           AccountKind @default(OTHER)
+  openingBalance Decimal     @default(0) @db.Decimal(14, 2)
+  sortOrder      Int         @default(0)
+  archivedAt     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  transactions         Transaction[] @relation("TransactionAccount")
+  incomingTransactions Transaction[] @relation("TransactionTransferAccount")
+
+  @@unique([userId, name])
+  @@index([userId, archivedAt])
+  @@map("accounts")
+}
+
+model Category {
+  id     String       @id @default(cuid())
+  userId String
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+  kind   CategoryKind @default(EXPENSE)
+  /// Hex colour used for charts and chips.
+  color  String       @default("#6366f1")
+  /// Lucide icon name rendered next to the category.
+  icon   String       @default("Circle")
+  /// Unspent allocation rolls into next month (e.g. Lifestyle / Personal).
+  carryForward Boolean @default(false)
+  /// System categories cannot be deleted, only archived.
+  isSystem     Boolean   @default(false)
+  sortOrder    Int       @default(0)
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  /// A category may front a sinking fund ("Vehicle Fund") so the fund can be
+  /// budgeted like any other line.
+  futureFundId String?     @unique
+  futureFund   FutureFund? @relation(fields: [futureFundId], references: [id], onDelete: SetNull)
+
+  transactions Transaction[]
+  budgetItems  BudgetItem[]
+
+  @@unique([userId, name])
+  @@index([userId, kind, archivedAt])
+  @@map("categories")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        TransactionType
+  /// Always stored positive; `type` carries the direction.
+  amount      Decimal         @db.Decimal(14, 2)
+  date        DateTime        @db.Date
+  description String          @default("")
+  notes       String?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  accountId String?
+  account   Account? @relation("TransactionAccount", fields: [accountId], references: [id], onDelete: SetNull)
+
+  /// Destination for a pure account-to-account TRANSFER.
+  transferAccountId String?
+  transferAccount   Account? @relation("TransactionTransferAccount", fields: [transferAccountId], references: [id], onDelete: SetNull)
+
+  /// TRANSFER -> contribution into the fund. EXPENSE -> spend financed by it.
+  futureFundId String?
+  futureFund   FutureFund? @relation(fields: [futureFundId], references: [id], onDelete: SetNull)
+
+  /// TRANSFER -> contribution into the goal. EXPENSE -> withdrawal from it.
+  savingsGoalId String?
+  savingsGoal   SavingsGoal? @relation(fields: [savingsGoalId], references: [id], onDelete: SetNull)
+
+  investmentId String?
+  investment   Investment? @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+
+  /// Marks rows created by the demo seed so they can be purged in one go.
+  isDemo Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, type, date])
+  @@index([userId, categoryId, date])
+  @@index([userId, futureFundId])
+  @@index([userId, savingsGoalId])
+  @@index([userId, investmentId])
+  @@map("transactions")
+}
+
+// ---------------------------------------------------------------------------
+// Budgeting — one immutable record per month
+// ---------------------------------------------------------------------------
+
+model MonthlyBudget {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Always the first day of the month, UTC midnight.
+  month        DateTime @db.Date
+  incomeTarget Decimal  @default(0) @db.Decimal(14, 2)
+  note         String?
+  isDemo       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items BudgetItem[]
+
+  @@unique([userId, month])
+  @@index([userId, month])
+  @@map("monthly_budgets")
+}
+
+model BudgetItem {
+  id              String        @id @default(cuid())
+  monthlyBudgetId String
+  monthlyBudget   MonthlyBudget @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  plannedAmount   Decimal       @db.Decimal(14, 2)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([monthlyBudgetId, categoryId])
+  @@index([categoryId])
+  @@map("budget_items")
+}
+
+// ---------------------------------------------------------------------------
+// Sinking funds, goals, investments
+// ---------------------------------------------------------------------------
+
+model FutureFund {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  /// Estimated annual cost the fund is working towards.
+  targetAmount        Decimal   @default(0) @db.Decimal(14, 2)
+  monthlyContribution Decimal   @default(0) @db.Decimal(14, 2)
+  /// Balance carried in from before tracking started.
+  openingBalance      Decimal   @default(0) @db.Decimal(14, 2)
+  nextExpenseLabel    String?
+  nextDueDate         DateTime? @db.Date
+  color               String    @default("#0ea5e9")
+  icon                String    @default("PiggyBank")
+  sortOrder           Int       @default(0)
+  archivedAt          DateTime?
+  isDemo              Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  category     Category?
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@index([userId, archivedAt])
+  @@map("future_funds")
+}
+
+model SavingsGoal {
+  id                  String          @id @default(cuid())
+  userId              String
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  kind                SavingsGoalKind @default(GENERAL)
+  targetAmount        Decimal         @default(0) @db.Decimal(14, 2)
+  openingBalance      Decimal         @default(0) @db.Decimal(14, 2)
+  monthlyContribution Decimal         @default(0) @db.Decimal(14, 2)
+  targetDate          DateTime?       @db.Date
+  notes               String?
+  color               String          @default("#10b981")
+  icon                String          @default("Target")
+  sortOrder           Int             @default(0)
+  archivedAt          DateTime?
+  isDemo              Boolean         @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@index([userId, archivedAt])
+  @@map("savings_goals")
+}
+
+model Investment {
+  id                  String         @id @default(cuid())
+  userId              String
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  kind                InvestmentKind @default(SIP)
+  provider            String?
+  monthlyContribution Decimal        @default(0) @db.Decimal(14, 2)
+  openingBalance      Decimal        @default(0) @db.Decimal(14, 2)
+  notes               String?
+  color               String         @default("#8b5cf6")
+  sortOrder           Int            @default(0)
+  archivedAt          DateTime?
+  isDemo              Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@index([userId, archivedAt])
+  @@map("investments")
+}
+
+// ---------------------------------------------------------------------------
+// Net worth
+// ---------------------------------------------------------------------------
+
+model NetWorthSnapshot {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month     DateTime @db.Date
+  note      String?
+  isDemo    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entries NetWorthEntry[]
+
+  @@unique([userId, month])
+  @@index([userId, month])
+  @@map("net_worth_snapshots")
+}
+
+model NetWorthEntry {
+  id         String            @id @default(cuid())
+  snapshotId String
+  snapshot   NetWorthSnapshot  @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  label      String
+  kind       NetWorthEntryKind
+  amount     Decimal           @db.Decimal(14, 2)
+  sortOrder  Int               @default(0)
+
+  @@index([snapshotId])
+  @@map("net_worth_entries")
+}
