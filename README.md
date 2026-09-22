@@ -13,6 +13,7 @@ authentication can be added later without reshaping the data model.
 ```bash
 npm install
 cp .env.example .env          # then set DATABASE_URL
+npx prisma generate           # build the typed client (it is not committed)
 npx prisma migrate deploy     # create the tables
 npm run db:seed               # optional: eight months of demo data
 npm run dev                   # http://localhost:3000
@@ -64,9 +65,14 @@ npx prisma dev ls                      # prints the connection string
 ## 4. Migrations
 
 ```bash
+npx prisma generate         # regenerate the typed client after a schema change
 npx prisma migrate deploy   # apply existing migrations (use this in CI/production)
 npm run db:migrate          # create a new migration after editing schema.prisma
 ```
+
+The generated Prisma client lives in `lib/generated/` and is deliberately not
+committed, so run `prisma generate` after cloning and after any schema change.
+`npm run build` does it for you.
 
 ## 5. Seed data
 
