@@ -4,7 +4,6 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import type { z } from "zod";
 
 import { useMoney } from "@/components/providers";
@@ -20,9 +19,10 @@ import {
 } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
-import { Switch } from "@/components/ui/primitives";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/field";
-import { createFutureFund, updateFutureFund } from "@/lib/actions/planning";
+import { createFutureFund, updateFutureFund } from "@/lib/actions/funds";
+import { runAction } from "@/lib/client/run-action";
 import { futureFundInputSchema } from "@/lib/validations/planning";
 import type { FutureFundDTO } from "@/lib/types";
 import { ColorPicker } from "@/components/ui/color-picker";
@@ -81,17 +81,12 @@ export function FundDialog({
   }, [fund, form, open]);
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = isEditing
-      ? await updateFutureFund({ id: fund.id, data: values })
-      : await createFutureFund(values);
+    const saved = await runAction(
+      () => (isEditing ? updateFutureFund({ id: fund.id, data: values }) : createFutureFund(values)),
+      { success: isEditing ? "Fund updated" : `${values.name} fund created` },
+    );
 
-    if (!result.ok) {
-      toast.error(result.error);
-      return;
-    }
-
-    toast.success(isEditing ? "Fund updated" : `${values.name} fund created`);
-    onOpenChange(false);
+    if (saved) onOpenChange(false);
   });
 
   const errors = form.formState.errors;

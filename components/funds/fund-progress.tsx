@@ -4,8 +4,9 @@ import * as React from "react";
 
 import { useChartTheme } from "@/components/charts/chart-kit";
 import { Money } from "@/components/money";
-import { Badge, ColorDot } from "@/components/ui/display";
-import { Progress } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/badge";
+import { ColorDot } from "@/components/ui/color-dot";
+import { Progress } from "@/components/ui/progress";
 import type { FutureFundWithBalance } from "@/lib/types";
 import { formatPercent } from "@/lib/format";
 import { formatDateLong, parseDateKey } from "@/lib/month";

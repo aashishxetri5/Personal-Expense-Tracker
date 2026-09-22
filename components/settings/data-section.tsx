@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ConfirmDialog } from "@/components/ui/primitives";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { deleteAllData } from "@/lib/actions/settings";
 
 const EXPORTS = [
