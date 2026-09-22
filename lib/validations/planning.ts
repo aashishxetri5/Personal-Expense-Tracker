@@ -13,7 +13,7 @@ import {
 
 // --- Budgets ---------------------------------------------------------------
 
-export const budgetItemSchema = z.object({
+const budgetItemSchema = z.object({
   categoryId: cuidSchema,
   plannedAmount: nonNegativeAmountSchema,
 });
@@ -25,8 +25,6 @@ export const saveBudgetSchema = z.object({
   items: z.array(budgetItemSchema).max(200, "That is a lot of budget lines"),
 });
 
-export type SaveBudgetInput = z.infer<typeof saveBudgetSchema>;
-
 export const copyBudgetSchema = z.object({
   from: monthKeySchema,
   to: monthKeySchema,
@@ -34,7 +32,7 @@ export const copyBudgetSchema = z.object({
 
 // --- Categories ------------------------------------------------------------
 
-export const categoryKindSchema = z.enum(["INCOME", "EXPENSE", "INVESTMENT", "SAVINGS", "FUTURE_FUND"]);
+const categoryKindSchema = z.enum(["INCOME", "EXPENSE", "INVESTMENT", "SAVINGS", "FUTURE_FUND"]);
 
 export const categoryInputSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(60, "Keep the name short"),
@@ -49,7 +47,7 @@ export const archiveCategorySchema = z.object({ id: cuidSchema, archived: z.bool
 
 // --- Accounts / payment methods -------------------------------------------
 
-export const accountKindSchema = z.enum(["CASH", "BANK", "WALLET", "CARD", "OTHER"]);
+const accountKindSchema = z.enum(["CASH", "BANK", "WALLET", "CARD", "OTHER"]);
 
 export const accountInputSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(60, "Keep the name short"),
@@ -81,7 +79,7 @@ export const archiveFutureFundSchema = z.object({ id: cuidSchema, archived: z.bo
 
 // --- Savings goals ---------------------------------------------------------
 
-export const savingsGoalKindSchema = z.enum(["EMERGENCY", "GENERAL"]);
+const savingsGoalKindSchema = z.enum(["EMERGENCY", "GENERAL"]);
 
 export const savingsGoalInputSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(60, "Keep the name short"),
@@ -100,7 +98,7 @@ export const archiveSavingsGoalSchema = z.object({ id: cuidSchema, archived: z.b
 
 // --- Investments -----------------------------------------------------------
 
-export const investmentKindSchema = z.enum([
+const investmentKindSchema = z.enum([
   "SIP",
   "MUTUAL_FUND",
   "STOCKS",
@@ -125,7 +123,7 @@ export const archiveInvestmentSchema = z.object({ id: cuidSchema, archived: z.bo
 
 // --- Net worth -------------------------------------------------------------
 
-export const netWorthEntrySchema = z.object({
+const netWorthEntrySchema = z.object({
   label: z.string().trim().min(1, "Label is required").max(60),
   kind: z.enum(["ASSET", "LIABILITY"]),
   amount: signedAmountSchema,
@@ -159,7 +157,3 @@ export const deleteAllDataSchema = z.object({
   demoOnly: z.boolean().default(false),
 });
 
-export const importDataSchema = z.object({
-  payload: z.string().min(2, "Paste a backup file"),
-  replaceExisting: z.boolean().default(false),
-});

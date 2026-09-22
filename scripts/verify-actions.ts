@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 
 import { createTransaction, deleteTransaction, updateTransaction } from "@/lib/actions/transactions";
 import { copyBudget, saveBudget } from "@/lib/actions/budget";
-import { createFutureFund, deleteFutureFund } from "@/lib/actions/planning";
+import { createFutureFund, deleteFutureFund } from "@/lib/actions/funds";
 import { prisma } from "@/lib/db/prisma";
 import { loadCurrentUser } from "@/lib/db/user";
 import { addMonths, currentMonth, toDateKey, toMonthKey } from "@/lib/month";
