@@ -7,10 +7,10 @@ import { toDateKey, toMonthKey } from "@/lib/month";
 export const dynamic = "force-dynamic";
 
 /**
- * A complete JSON backup.
+ * Builds a complete JSON backup. Amounts serialise as numbers and dates as
+ * strings, so the file is readable without Prisma's Decimal type.
  *
- * Amounts are serialised as numbers and dates as `YYYY-MM-DD` / `YYYY-MM`, so
- * the file is readable and re-importable without needing Prisma's Decimal type.
+ * @returns A JSON download containing every record the user owns.
  */
 export async function GET() {
   const user = await getCurrentUser();

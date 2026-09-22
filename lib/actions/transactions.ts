@@ -13,11 +13,11 @@ import {
 } from "@/lib/validations/transaction";
 
 /**
- * Turn validated form input into a database row.
+ * Turns validated input into a row, clearing links the chosen type cannot have
+ * so a fund link cannot survive a switch to a plain expense and drain the fund.
  *
- * Links that do not apply to the chosen type are cleared rather than carried
- * over. Without this, switching a transaction from "Transfer to Vehicle fund"
- * to "Expense" would leave the fund link behind and quietly drain the fund.
+ * @param input - Validated transaction fields.
+ * @returns The row data ready for Prisma.
  */
 function toRowData(input: TransactionInput) {
   const date = parseDateKey(input.date);

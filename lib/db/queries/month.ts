@@ -58,9 +58,12 @@ export type MonthSnapshot = {
 };
 
 /**
- * Balances for funds, goals and investments *as they stood at the end of a
- * given month*. Aggregated in the database so browsing 2024 does not drag every
- * transaction since then over the wire.
+ * Balances as they stood at the end of a month, aggregated in the database so
+ * browsing an old month does not pull every transaction since over the wire.
+ *
+ * @param userId - Owner of the records.
+ * @param month - The month being viewed; balances are taken at its end.
+ * @returns Fund, goal and investment totals keyed by id.
  */
 async function balancesThroughMonth(userId: string, month: Date) {
   const before = { lt: monthEnd(month) };
@@ -129,12 +132,13 @@ async function balancesThroughMonth(userId: string, month: Date) {
 }
 
 /**
- * Carried-in balances for every carry-forward category.
+ * Replays every month up to the one being viewed, so a rollover is recomputed
+ * from history rather than stored — fixing a past month corrects the rest.
  *
- * Replays each month from the first month that has a budget (or a transaction)
- * up to the month being viewed, so the rollover is always recomputed from
- * history rather than stored — editing a past month corrects the future
- * automatically.
+ * @param userId - Owner of the records.
+ * @param month - The month being viewed.
+ * @param categories - All categories; only carry-forward ones are replayed.
+ * @returns Amount carried into the viewed month, per category id.
  */
 async function carryForwardBalances(
   userId: string,

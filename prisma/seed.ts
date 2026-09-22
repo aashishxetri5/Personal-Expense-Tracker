@@ -1,12 +1,7 @@
 /**
- * Demo data.
- *
- * Every row created here is flagged `isDemo`, so Settings → Danger zone can
- * remove the sample data in one go without touching anything entered by hand.
- * Re-running the seed replaces the previous demo data rather than stacking a
- * second copy on top of it.
- *
- *   npm run db:seed
+ * Demo data — run with `npm run db:seed`.
+ * Every row is flagged isDemo so Settings can remove it in one go, and
+ * re-running replaces the previous demo data rather than duplicating it.
  */
 
 import { prisma } from "@/lib/db/prisma";

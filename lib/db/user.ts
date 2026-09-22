@@ -11,14 +11,9 @@ import {
 } from "@/lib/db/defaults";
 
 /**
- * Single-user mode.
- *
- * Every row in the schema already hangs off a `userId`, so adding real auth
- * later means replacing the body of `getCurrentUserId()` with a session lookup —
- * no query, action or component below this file needs to change.
- *
- * The id is deterministic so concurrent cold starts upsert the same row instead
- * of racing to create two users.
+ * Single-user mode. Every table already hangs off a userId, so adding real auth
+ * means changing only getCurrentUserId — no query or component below this file.
+ * The id is deterministic so concurrent cold starts cannot create two users.
  */
 const SINGLE_USER_ID = "primary";
 
@@ -76,8 +71,10 @@ async function bootstrapUser(): Promise<void> {
 }
 
 /**
- * Load (and if necessary create) the workspace. Exported uncached so scripts
- * outside a React render — the seed, for one — can call it directly.
+ * Loads the workspace, creating it with its starter data on first use.
+ * Uncached, so scripts outside a React render can call it directly.
+ *
+ * @returns The current user with their settings.
  */
 export async function loadCurrentUser(): Promise<CurrentUser> {
   let record = await prisma.user.findUnique({
@@ -114,11 +111,18 @@ export async function loadCurrentUser(): Promise<CurrentUser> {
 }
 
 /**
- * The current user. `cache` de-duplicates the lookup across a single server
- * render, so every component can ask for it without extra queries.
+ * The current user, memoised for one server render so every component can ask
+ * for it without issuing extra queries.
+ *
+ * @returns The current user with their settings.
  */
 export const getCurrentUser = cache(loadCurrentUser);
 
+/**
+ * Convenience accessor when only the id is needed.
+ *
+ * @returns The current user's id.
+ */
 export async function getCurrentUserId(): Promise<string> {
   const user = await getCurrentUser();
   return user.id;

@@ -31,12 +31,11 @@ export async function saveSettings(input: unknown): Promise<ActionResult<{ ok: t
 }
 
 /**
- * Wipe financial data.
+ * Wipes financial data. A full wipe keeps categories, accounts, funds and goals
+ * so starting over does not mean rebuilding the whole setup.
  *
- * `demoOnly` removes just the rows the seed script created, so demo data can be
- * cleared without touching anything entered by hand. The full wipe keeps the
- * user, their settings and their reference lists (categories, accounts, funds,
- * goals, investments) — starting over should not mean rebuilding the setup.
+ * @param input - Typed confirmation, and `demoOnly` to remove only seeded rows.
+ * @returns How many records were deleted, or a failure.
  */
 export async function deleteAllData(input: unknown): Promise<ActionResult<{ deleted: number }>> {
   const parsed = parseInput(deleteAllDataSchema, input);

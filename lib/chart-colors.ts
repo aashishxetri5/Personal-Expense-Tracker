@@ -1,15 +1,8 @@
 /**
- * Categorical palette.
- *
- * These eight hues were validated as a set (lightness band, chroma floor,
- * adjacent-pair CVD separation, normal-vision separation and contrast against
- * both surfaces) — the order is the colour-blind-safety mechanism, not a
- * decoration, so slots are assigned in this fixed order and never cycled by
- * rank. Colour follows the entity: a category keeps its hue no matter where it
- * ranks in a given month, so filtering never repaints the survivors.
- *
- * Each slot carries a light and a dark step. The dark column is the same hues
- * re-stepped for a dark surface, not an automatic inversion.
+ * Categorical palette, validated as a set for lightness, chroma, contrast and
+ * colour-vision separation. The slot order is the safety mechanism, so hues are
+ * assigned in this fixed order and never cycled by rank. Each slot carries a
+ * dark step chosen for the dark surface, not an automatic inversion.
  */
 export const CATEGORICAL_SLOTS = [
   { name: "blue", light: "#2a78d6", dark: "#3987e5" },
@@ -38,11 +31,12 @@ const LIGHT_TO_DARK = new Map(
 );
 
 /**
- * Re-step a stored colour for the dark surface.
+ * Re-steps a stored colour for the current surface. A custom colour the user
+ * chose is returned untouched.
  *
- * Categories store their light-mode hex. When a chart renders on the dark
- * surface, palette colours swap to their validated dark step; a custom colour
- * the user chose is left exactly as they set it.
+ * @param hex - The category's stored light-mode colour.
+ * @param isDark - Whether the chart is rendering on the dark surface.
+ * @returns The colour to paint with.
  */
 export function resolveSeriesColor(hex: string, isDark: boolean): string {
   if (!isDark) return hex;

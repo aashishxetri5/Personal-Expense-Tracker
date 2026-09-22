@@ -1,11 +1,7 @@
 /**
- * End-to-end verification of the financial rules, run against a real database.
- *
- *   npm run verify
- *
- * Each scenario writes real rows, re-reads them through the same query layer
- * the pages use, asserts the outcome, and then removes what it created. It is
- * safe to run against a database with existing data.
+ * End-to-end checks of the financial rules — run with `npm run verify`.
+ * Each scenario writes real rows, re-reads them through the query layer the
+ * pages use, asserts the outcome, then removes what it created.
  */
 
 import assert from "node:assert/strict";
