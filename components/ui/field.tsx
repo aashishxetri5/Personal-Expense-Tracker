@@ -19,8 +19,11 @@ function Label({ className, ...props }: React.ComponentProps<typeof LabelPrimiti
 }
 
 /**
- * A labelled form field with inline validation messaging.
- * Wires `aria-describedby` / `aria-invalid` so errors are announced.
+ * A labelled form field with inline validation, wiring the ARIA attributes so
+ * errors are announced rather than only shown.
+ *
+ * @param props - Label, control id, and optional hint or error text.
+ * @returns The labelled field.
  */
 function Field({
   label,

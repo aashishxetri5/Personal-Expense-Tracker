@@ -6,9 +6,11 @@ import { CATEGORICAL_SLOTS } from "@/lib/chart-colors";
 import { cn } from "@/lib/utils";
 
 /**
- * Colours are chosen from the validated categorical palette rather than a free
- * colour wheel — an arbitrary hex can easily be invisible on one of the two
- * surfaces, or indistinguishable from a neighbour for a colour-blind reader.
+ * Picks from the validated palette rather than a free colour wheel: an
+ * arbitrary hex is easily invisible on one surface or ambiguous to a CVD reader.
+ *
+ * @param props - The selected colour and the change handler.
+ * @returns The swatch radio group.
  */
 export function ColorPicker({
   value,

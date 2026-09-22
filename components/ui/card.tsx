@@ -45,16 +45,6 @@ function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn("absolute top-4 right-4 flex items-center gap-1", className)}
-      {...props}
-    />
-  );
-}
-
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return <div data-slot="card-content" className={cn("px-5 pb-5", className)} {...props} />;
 }
@@ -69,4 +59,4 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-export { Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter };
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };

@@ -29,11 +29,11 @@ type Metric = {
 };
 
 /**
- * The five headline figures.
+ * The five headline figures. Every rupee of income lands in exactly one of
+ * Spent, Invested, Saved or Remaining, so the cards are a partition.
  *
- * Every rupee of income lands in exactly one of Spent, Invested, Saved or
- * Remaining — the cards are a partition, not a pile of loosely related numbers,
- * which is what stops the double-counting this kind of app usually suffers from.
+ * @param props - The month's summary and its planned budget total.
+ * @returns The summary card strip.
  */
 export function SummaryCards({
   summary,

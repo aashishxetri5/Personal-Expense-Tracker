@@ -15,17 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TRANSACTION_TYPE_LABELS } from "@/lib/labels";
 import type { CategoryDTO } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const ANY = "__any__";
-
-const TYPE_LABELS: Record<string, string> = {
-  INCOME: "Income",
-  EXPENSE: "Expense",
-  INVESTMENT: "Investment",
-  TRANSFER: "Transfer",
-};
 
 const SORT_LABELS: Record<string, string> = {
   "date-desc": "Newest first",
@@ -35,8 +29,11 @@ const SORT_LABELS: Record<string, string> = {
 };
 
 /**
- * Filters live in the URL so a filtered view can be shared or bookmarked, and
- * so the back button behaves the way people expect.
+ * Search and filter controls. Filters live in the URL so a view can be shared
+ * and the back button behaves as people expect.
+ *
+ * @param props - Categories to offer, and an optional class name.
+ * @returns The filter bar.
  */
 export function TransactionFilters({
   categories,
@@ -136,7 +133,7 @@ export function TransactionFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ANY}>Any type</SelectItem>
-            {Object.entries(TYPE_LABELS).map(([value, label]) => (
+            {Object.entries(TRANSACTION_TYPE_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>
                 {label}
               </SelectItem>

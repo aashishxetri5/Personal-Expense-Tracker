@@ -6,7 +6,7 @@
 
 import assert from "node:assert/strict";
 
-import { getMonthSnapshot } from "@/lib/db/queries/month";
+import { loadMonthSnapshot } from "@/lib/db/queries/month";
 import { getTransactionPage } from "@/lib/db/queries/transactions";
 import { prisma } from "@/lib/db/prisma";
 import { loadCurrentUser } from "@/lib/db/user";
@@ -67,12 +67,9 @@ async function main() {
     return row;
   };
 
-  // Snapshots are memoised per render in the app; in a script the cache has to
-  // be stepped around so each assertion reads fresh numbers.
-  const snapshotFor = async (month: Date) => {
-    const { getMonthSnapshot: fresh } = await import(`@/lib/db/queries/month?v=${Date.now()}`);
-    return (fresh as typeof getMonthSnapshot)(user.id, month);
-  };
+  // The uncached loader, so every assertion reads fresh numbers rather than a
+  // value memoised earlier in the run.
+  const snapshotFor = (month: Date) => loadMonthSnapshot(user.id, month);
 
   console.log(`\nVerifying against ${formatMonthLabel(september)} and neighbouring months\n`);
 

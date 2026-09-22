@@ -46,8 +46,11 @@ function LegendRow({ series }: { series: SeriesDef[] }) {
 }
 
 /**
- * Change over time. A crosshair plus a shared tooltip means every series can be
- * read at the same x without hunting for individual points.
+ * Change over time. A crosshair and shared tooltip let every series be read at
+ * the same point on the x axis.
+ *
+ * @param props - The points, the series to draw, and display options.
+ * @returns The line or area chart with its screen-reader table.
  */
 export function TrendLineChart({
   data,
@@ -164,7 +167,12 @@ export function TrendLineChart({
   );
 }
 
-/** Grouped bars — income against spending, or planned against actual. */
+/**
+ * Grouped bars — income against spending, or planned against actual.
+ *
+ * @param props - The points, the series to draw, and an optional height.
+ * @returns The bar chart with its screen-reader table.
+ */
 export function GroupedBarChart({
   data,
   series,
@@ -250,8 +258,11 @@ export function GroupedBarChart({
 }
 
 /**
- * Net worth over time. A single series, so no legend box — the card title names
- * it. Negative net worth is drawn in the reserved "negative" status colour.
+ * Net worth over time. One series, so the card title names it instead of a
+ * legend; a negative net worth uses the reserved status colour.
+ *
+ * @param props - The monthly points and an optional height.
+ * @returns The area chart with its screen-reader table.
  */
 export function NetWorthChart({ data, height = 260 }: { data: SeriesPoint[]; height?: number }) {
   const theme = useChartTheme();
@@ -337,8 +348,11 @@ export function NetWorthChart({ data, height = 260 }: { data: SeriesPoint[]; hei
 }
 
 /**
- * Planned against actual for one month, one bar per category.
- * Bars over budget take the reserved negative status colour.
+ * Planned against actual for one month, one bar per category. Bars over budget
+ * take the reserved negative status colour.
+ *
+ * @param props - The per-category figures and an optional height.
+ * @returns The grouped bar chart with its screen-reader table.
  */
 export function BudgetVsActualChart({
   data,

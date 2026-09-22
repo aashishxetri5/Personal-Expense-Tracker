@@ -30,4 +30,4 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   );
 }
 
-export { Input, Textarea, fieldClasses };
+export { Input, Textarea };

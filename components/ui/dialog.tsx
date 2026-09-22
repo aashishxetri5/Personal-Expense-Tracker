@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
-const DialogClose = DialogPrimitive.Close;
 const DialogPortal = DialogPrimitive.Portal;
 
 function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
@@ -26,8 +25,11 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
 }
 
 /**
- * On phones the dialog docks to the bottom of the screen like a sheet, which
- * puts the primary action within thumb reach. On larger screens it centres.
+ * Dialog surface. On phones it docks to the bottom so the primary action stays
+ * in thumb reach; on larger screens it centres.
+ *
+ * @param props - Radix content props plus `showClose` for the corner button.
+ * @returns The portalled dialog.
  */
 function DialogContent({
   className,
@@ -109,13 +111,10 @@ function DialogDescription({
 export {
   Dialog,
   DialogBody,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 };

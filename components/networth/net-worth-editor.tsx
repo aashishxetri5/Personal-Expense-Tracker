@@ -49,8 +49,11 @@ function toDraft(snapshot: NetWorthSnapshotDTO | null, suggested: Record<string,
 }
 
 /**
- * One snapshot per month. Snapshots are point-in-time records rather than a
- * running figure, which is what makes the net-worth line an honest history.
+ * Editor for one month's snapshot. Snapshots are point-in-time records rather
+ * than a running figure, which is what makes the trend line honest.
+ *
+ * @param props - The month, its saved snapshot, and suggested starting values.
+ * @returns The assets and liabilities editor.
  */
 export function NetWorthEditor({
   monthKey,

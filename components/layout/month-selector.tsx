@@ -32,12 +32,11 @@ const MONTH_LABELS = [
 ];
 
 /**
- * The month control that drives every month-aware screen.
+ * The control that drives every month-aware screen. The month lives in the URL,
+ * so it survives a refresh, can be shared, and re-renders without a reload.
  *
- * The selected month lives in the URL (`?m=YYYY-MM`), which means it survives
- * refreshes, can be bookmarked and shared, and changes the page through a
- * client-side navigation — the server components re-render with new data
- * without a full page reload.
+ * @param props - Optional class name for the wrapper.
+ * @returns The month stepper with its picker popover.
  */
 export function MonthSelector({ className }: { className?: string }) {
   const router = useRouter();

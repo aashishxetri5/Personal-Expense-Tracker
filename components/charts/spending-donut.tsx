@@ -11,12 +11,11 @@ import { formatPercent } from "@/lib/format";
 export type DonutDatum = { id: string; label: string; value: number; color: string };
 
 /**
- * Where the month went.
+ * Where the month went. Arcs are capped and the tail folded into "Other", with
+ * a legend listing every category so identity is never colour alone.
  *
- * The arcs are capped and the tail folded into "Other" — past a handful of
- * slices a donut stops being readable. The legend beside it lists every
- * category with its amount, so nothing is hidden and the identity of each arc
- * is carried by text as well as colour.
+ * @param props - The category amounts and the month's total.
+ * @returns The donut with its legend, or null when there is nothing to show.
  */
 export function SpendingDonut({ data, total }: { data: DonutDatum[]; total: number }) {
   const theme = useChartTheme();

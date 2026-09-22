@@ -4,8 +4,11 @@ import { useMoney } from "@/components/providers";
 import { cn } from "@/lib/utils";
 
 /**
- * Renders an amount in the user's currency. Client-side so a currency change in
- * Settings reformats every figure without a server round trip.
+ * Renders an amount in the user's currency, reformatting everywhere when the
+ * currency setting changes.
+ *
+ * @param props - The amount plus sign, decimal and colour options.
+ * @returns The formatted amount.
  */
 export function Money({
   value,

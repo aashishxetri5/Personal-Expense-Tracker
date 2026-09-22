@@ -29,11 +29,11 @@ const KIND_SECTIONS: { kind: CategoryDTO["kind"]; label: string; hint: string }[
 ];
 
 /**
- * The plan for one month.
+ * Editor for one month's plan. Saving writes a single MonthlyBudget row, so
+ * changing October cannot reach September — they are different records.
  *
- * Saving writes a single `MonthlyBudget` row: changing October cannot reach
- * September, because they are different records. That is the whole reason
- * budgets are stored per month rather than as one global set of amounts.
+ * @param props - The month, its saved budget, and the categories to plan.
+ * @returns The budget form with its sticky totals bar.
  */
 export function BudgetEditor({
   monthKey,

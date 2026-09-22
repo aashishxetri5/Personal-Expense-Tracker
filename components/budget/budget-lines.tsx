@@ -19,11 +19,13 @@ function toneFor(line: BudgetLine) {
 }
 
 /**
- * One budget line: planned against actual, with the over-budget case called out
- * clearly but without shouting. Carry-forward categories show what rolled in
- * from previous months, because their ceiling is not just this month's plan.
+ * One budget line: planned against actual. Carry-forward categories also show
+ * what rolled in, since their ceiling is more than this month's allocation.
+ *
+ * @param props - The line to render.
+ * @returns The list row with its progress bar.
  */
-export function BudgetLineRow({ line }: { line: BudgetLine }) {
+function BudgetLineRow({ line }: { line: BudgetLine }) {
   const theme = useChartTheme();
 
   return (

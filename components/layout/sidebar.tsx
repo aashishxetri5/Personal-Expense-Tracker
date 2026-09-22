@@ -9,8 +9,11 @@ import { MONTH_AWARE_ROUTES, NAV_SECTIONS, isActiveRoute } from "@/components/la
 import { cn } from "@/lib/utils";
 
 /**
- * A nav link that carries the selected month across pages, so moving from the
- * Dashboard to Transactions keeps you in the same month.
+ * A nav link that carries the selected month across pages, so moving between
+ * screens keeps you in the same month.
+ *
+ * @param props - Link props plus an optional navigation callback.
+ * @returns The link, with the month appended where the route supports it.
  */
 export function MonthAwareLink({
   href,

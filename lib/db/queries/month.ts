@@ -215,7 +215,15 @@ async function carryForwardBalances(
 }
 
 /** Everything the Dashboard, Budget and Spending views read from. */
-export const getMonthSnapshot = cache(async (userId: string, month: Date): Promise<MonthSnapshot> => {
+/**
+ * Gathers everything the Dashboard, Budget and Spending views read for a month.
+ * Uncached, so scripts outside a React render can call it directly.
+ *
+ * @param userId - Owner of the records.
+ * @param month - The month to summarise.
+ * @returns The month's summary, budget, balances and category breakdown.
+ */
+export async function loadMonthSnapshot(userId: string, month: Date): Promise<MonthSnapshot> {
   const [entries, budgetRecord, categories, funds, goals, investments, balances] = await Promise.all([
     ledgerForMonth(userId, month),
     prisma.monthlyBudget.findUnique({
@@ -340,4 +348,14 @@ export const getMonthSnapshot = cache(async (userId: string, month: Date): Promi
     emergencyFund: goalsWithProgress.find((goal) => goal.kind === "EMERGENCY" && !goal.archived) ?? null,
     carryForwardLines: lines.filter((line) => line.carryForward),
   };
-});
+}
+
+/**
+ * The month snapshot, memoised for one server render so sibling components do
+ * not each re-run the same aggregation.
+ *
+ * @param userId - Owner of the records.
+ * @param month - The month to summarise.
+ * @returns The month's summary, budget, balances and category breakdown.
+ */
+export const getMonthSnapshot = cache(loadMonthSnapshot);
