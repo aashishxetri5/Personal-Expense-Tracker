@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ConfirmDialog } from "@/components/ui/primitives";
-import { deleteNetWorthSnapshot, saveNetWorthSnapshot } from "@/lib/actions/planning";
-import { round2 } from "@/lib/format";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { deleteNetWorthSnapshot, saveNetWorthSnapshot } from "@/lib/actions/net-worth";
+import { parseAmountInput, round2 } from "@/lib/format";
 import { formatMonthLabel, parseMonthKey } from "@/lib/month";
 import type { NetWorthEntryKind, NetWorthSnapshotDTO } from "@/lib/types";
 import { localId } from "@/lib/utils";
@@ -48,11 +48,6 @@ function toDraft(snapshot: NetWorthSnapshotDTO | null, suggested: Record<string,
   ];
 }
 
-function parseAmount(value: string): number {
-  const parsed = Number(value.replace(/,/g, "").trim());
-  return Number.isFinite(parsed) ? round2(parsed) : 0;
-}
-
 /**
  * One snapshot per month. Snapshots are point-in-time records rather than a
  * running figure, which is what makes the net-worth line an honest history.
@@ -83,8 +78,8 @@ export function NetWorthEditor({
   const assets = entries.filter((entry) => entry.kind === "ASSET");
   const liabilities = entries.filter((entry) => entry.kind === "LIABILITY");
 
-  const assetTotal = round2(assets.reduce((sum, entry) => sum + parseAmount(entry.amount), 0));
-  const liabilityTotal = round2(liabilities.reduce((sum, entry) => sum + parseAmount(entry.amount), 0));
+  const assetTotal = round2(assets.reduce((sum, entry) => sum + parseAmountInput(entry.amount, { allowNegative: true }), 0));
+  const liabilityTotal = round2(liabilities.reduce((sum, entry) => sum + parseAmountInput(entry.amount, { allowNegative: true }), 0));
   const netWorth = round2(assetTotal - liabilityTotal);
 
   const update = (key: string, patch: Partial<DraftEntry>) =>
@@ -101,7 +96,7 @@ export function NetWorthEditor({
       .map((entry) => ({
         label: entry.label.trim(),
         kind: entry.kind,
-        amount: parseAmount(entry.amount),
+        amount: parseAmountInput(entry.amount, { allowNegative: true }),
       }));
 
     if (payload.length === 0) {

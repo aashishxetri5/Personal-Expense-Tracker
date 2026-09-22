@@ -2,21 +2,19 @@
 
 import * as React from "react";
 import { ArrowLeftRight, MoreHorizontal, Pencil, Receipt, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 import { useChartTheme } from "@/components/charts/chart-kit";
 import { Money } from "@/components/money";
 import { AddTransactionButton, useTransactionDialog } from "@/components/transactions/transaction-dialog";
-import { Badge, ColorDot, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/display";
+import { Badge } from "@/components/ui/badge";
+import { ColorDot } from "@/components/ui/color-dot";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  ConfirmDialog,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/primitives";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { deleteTransaction } from "@/lib/actions/transactions";
+import { runAction } from "@/lib/client/run-action";
 import { formatDateLong, formatDayShort, parseDateKey } from "@/lib/month";
 import type { TransactionDTO } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -77,16 +75,12 @@ function RowActions({ transaction }: { transaction: TransactionDTO }) {
 
   const handleDelete = async () => {
     setPending(true);
-    const result = await deleteTransaction({ id: transaction.id });
+    const deleted = await runAction(() => deleteTransaction({ id: transaction.id }), {
+      success: "Transaction deleted",
+    });
     setPending(false);
 
-    if (!result.ok) {
-      toast.error(result.error);
-      return;
-    }
-
-    setConfirming(false);
-    toast.success("Transaction deleted");
+    if (deleted) setConfirming(false);
   };
 
   return (

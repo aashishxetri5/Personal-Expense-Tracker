@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/primitives";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PERIODS = [
   { value: "month", label: "Monthly" },

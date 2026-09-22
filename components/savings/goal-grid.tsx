@@ -1,98 +1,45 @@
 "use client";
 
 import * as React from "react";
-import { Archive, ArchiveRestore, MoreHorizontal, Pencil, Target, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { Target } from "lucide-react";
 
 import { GoalCard } from "@/components/savings/goal-progress";
 import { GoalDialog, NewGoalButton } from "@/components/savings/goal-dialog";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/display";
-import {
-  ConfirmDialog,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/primitives";
-import { archiveSavingsGoal, deleteSavingsGoal } from "@/lib/actions/planning";
+import { EmptyState } from "@/components/ui/empty-state";
+import { EntityActions } from "@/components/ui/entity-actions";
+import { archiveSavingsGoal, deleteSavingsGoal } from "@/lib/actions/goals";
 import type { SavingsGoalWithProgress } from "@/lib/types";
 
+/**
+ * Edit/archive/delete menu for one goal, with the edit dialog it opens.
+ *
+ * @param props - The goal the menu acts on.
+ * @returns The actions menu.
+ */
 function GoalActions({ goal }: { goal: SavingsGoalWithProgress }) {
   const [editing, setEditing] = React.useState(false);
-  const [confirming, setConfirming] = React.useState(false);
-  const [pending, setPending] = React.useState(false);
-
-  const toggleArchive = async () => {
-    const result = await archiveSavingsGoal({ id: goal.id, archived: !goal.archived });
-    if (!result.ok) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success(goal.archived ? `${goal.name} restored` : `${goal.name} archived`);
-  };
-
-  const handleDelete = async () => {
-    setPending(true);
-    const result = await deleteSavingsGoal({ id: goal.id });
-    setPending(false);
-
-    if (!result.ok) {
-      toast.error(result.error);
-      return;
-    }
-
-    setConfirming(false);
-    toast.success(
-      result.data.archived
-        ? `${goal.name} has contributions, so it was archived instead`
-        : `${goal.name} deleted`,
-    );
-  };
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm" aria-label={`Actions for ${goal.name}`}>
-            <MoreHorizontal />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onSelect={() => setEditing(true)}>
-            <Pencil /> Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={toggleArchive}>
-            {goal.archived ? (
-              <>
-                <ArchiveRestore /> Restore
-              </>
-            ) : (
-              <>
-                <Archive /> Archive
-              </>
-            )}
-          </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onSelect={() => setConfirming(true)}>
-            <Trash2 /> Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <GoalDialog goal={goal} open={editing} onOpenChange={setEditing} />
-
-      <ConfirmDialog
-        open={confirming}
-        onOpenChange={setConfirming}
-        loading={pending}
-        title={`Delete ${goal.name}?`}
-        description="Goals with contributions are archived instead, so your history stays intact."
-        onConfirm={handleDelete}
+      <EntityActions
+        name={goal.name}
+        archived={goal.archived}
+        onEdit={() => setEditing(true)}
+        archive={(archived) => archiveSavingsGoal({ id: goal.id, archived })}
+        remove={() => deleteSavingsGoal({ id: goal.id })}
+        deleteDescription="Goals with contributions are archived instead, so your history stays intact."
       />
+      <GoalDialog goal={editing ? goal : null} open={editing} onOpenChange={setEditing} />
     </>
   );
 }
 
+/**
+ * Grid of savings goals, or the prompt to create the first one.
+ *
+ * @param props - The goals to render, with their progress.
+ * @returns The goal grid or an empty state.
+ */
 export function GoalGrid({ goals }: { goals: SavingsGoalWithProgress[] }) {
   if (goals.length === 0) {
     return (

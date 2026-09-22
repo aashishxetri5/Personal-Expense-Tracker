@@ -4,7 +4,6 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import type { z } from "zod";
 
 import { useMoney } from "@/components/providers";
@@ -22,7 +21,8 @@ import {
 import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createSavingsGoal, updateSavingsGoal } from "@/lib/actions/planning";
+import { createSavingsGoal, updateSavingsGoal } from "@/lib/actions/goals";
+import { runAction } from "@/lib/client/run-action";
 import type { SavingsGoalDTO } from "@/lib/types";
 import { savingsGoalInputSchema } from "@/lib/validations/planning";
 
@@ -78,17 +78,12 @@ export function GoalDialog({
   }, [form, goal, open]);
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = isEditing
-      ? await updateSavingsGoal({ id: goal.id, data: values })
-      : await createSavingsGoal(values);
+    const saved = await runAction(
+      () => (isEditing ? updateSavingsGoal({ id: goal.id, data: values }) : createSavingsGoal(values)),
+      { success: isEditing ? "Goal updated" : `${values.name} created` },
+    );
 
-    if (!result.ok) {
-      toast.error(result.error);
-      return;
-    }
-
-    toast.success(isEditing ? "Goal updated" : `${values.name} created`);
-    onOpenChange(false);
+    if (saved) onOpenChange(false);
   });
 
   const errors = form.formState.errors;
