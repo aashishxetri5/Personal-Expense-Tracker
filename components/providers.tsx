@@ -4,13 +4,20 @@ import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Toaster } from "sonner";
 
-import { TooltipProvider } from "@/components/ui/primitives";
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE, formatCompact, formatCurrency, formatNumber } from "@/lib/format";
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_LOCALE,
+  formatCompact,
+  formatCurrency,
+  formatNumber,
+} from "@/lib/format";
 
-type MoneyContextValue = {
+export type MoneyFormatOptions = { signed?: boolean; decimals?: boolean };
+
+export type MoneyContextValue = {
   currency: string;
   locale: string;
-  format: (value: number, options?: { signed?: boolean; decimals?: boolean }) => string;
+  format: (value: number, options?: MoneyFormatOptions) => string;
   formatPlain: (value: number) => string;
   formatAxis: (value: number) => string;
 };
@@ -18,10 +25,13 @@ type MoneyContextValue = {
 const MoneyContext = React.createContext<MoneyContextValue | null>(null);
 
 /**
- * Currency is a user setting, so every client component formats money through
- * this context instead of importing a hardcoded currency.
+ * Supplies the user's currency to every client component, so no component
+ * formats money against a hardcoded currency.
+ *
+ * @param props - The currency code, locale, and the tree to provide to.
+ * @returns The provider wrapping its children.
  */
-export function MoneyProvider({
+function MoneyProvider({
   currency,
   locale,
   children,
@@ -44,12 +54,16 @@ export function MoneyProvider({
   return <MoneyContext.Provider value={value}>{children}</MoneyContext.Provider>;
 }
 
+/**
+ * Reads the active currency formatters.
+ *
+ * @returns The money context, falling back to defaults outside the provider so
+ *          a component rendered in a portal can never crash.
+ */
 export function useMoney(): MoneyContextValue {
   const context = React.useContext(MoneyContext);
   if (context) return context;
 
-  // Safe fallback so a component can never crash because it rendered outside
-  // the provider (e.g. inside a portal during a transition).
   return {
     currency: DEFAULT_CURRENCY,
     locale: DEFAULT_LOCALE,
@@ -59,6 +73,12 @@ export function useMoney(): MoneyContextValue {
   };
 }
 
+/**
+ * Wraps the app in theme, currency and toast providers.
+ *
+ * @param props - The user's currency and locale, plus the app tree.
+ * @returns The provider stack.
+ */
 export function Providers({
   currency,
   locale,
@@ -71,20 +91,18 @@ export function Providers({
   return (
     <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <MoneyProvider currency={currency} locale={locale}>
-        <TooltipProvider delayDuration={200} skipDelayDuration={300}>
-          {children}
-          <Toaster
-            position="bottom-right"
-            richColors
-            closeButton
-            toastOptions={{
-              classNames: {
-                toast:
-                  "!rounded-xl !border !border-border !bg-popover !text-popover-foreground !shadow-lg",
-              },
-            }}
-          />
-        </TooltipProvider>
+        {children}
+        <Toaster
+          position="bottom-right"
+          richColors
+          closeButton
+          toastOptions={{
+            classNames: {
+              toast:
+                "!rounded-xl !border !border-border !bg-popover !text-popover-foreground !shadow-lg",
+            },
+          }}
+        />
       </MoneyProvider>
     </NextThemesProvider>
   );

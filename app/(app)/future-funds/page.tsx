@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import { StatTile } from "@/components/stat-tile";
 
 import { FundGrid } from "@/components/funds/fund-grid";
 import { NewFundButton } from "@/components/funds/fund-dialog";
-import { Money } from "@/components/money";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/display";
+import { PageHeader } from "@/components/ui/page-header";
 import { getMonthSnapshot } from "@/lib/db/queries/month";
 import { getTransactionPage } from "@/lib/db/queries/transactions";
 import { getCurrentUser } from "@/lib/db/user";
@@ -81,19 +81,6 @@ export default async function FutureFundsPage({
           <FundGrid funds={archived} />
         </section>
       ) : null}
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-semibold tracking-tight">
-        <Money value={value} />
-      </p>
     </div>
   );
 }

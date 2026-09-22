@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { StatTile } from "@/components/stat-tile";
 
 import { TrendLineChart } from "@/components/charts/trend-charts";
-import { InvestmentGrid, NewInvestmentButton } from "@/components/investments/investment-ui";
-import { Money } from "@/components/money";
+import { NewInvestmentButton } from "@/components/investments/investment-dialog";
+import { InvestmentGrid } from "@/components/investments/investment-grid";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/display";
+import { PageHeader } from "@/components/ui/page-header";
 import { SLOT } from "@/lib/chart-colors";
 import { getMonthlyHistory } from "@/lib/db/queries/history";
 import { getMonthSnapshot } from "@/lib/db/queries/month";
@@ -124,19 +125,6 @@ export default async function InvestmentsPage({
           <InvestmentGrid investments={archived} />
         </section>
       ) : null}
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-semibold tracking-tight">
-        <Money value={value} />
-      </p>
     </div>
   );
 }

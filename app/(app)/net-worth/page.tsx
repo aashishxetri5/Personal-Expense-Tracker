@@ -2,18 +2,12 @@ import type { Metadata } from "next";
 
 import { NetWorthChart } from "@/components/charts/trend-charts";
 import { Money } from "@/components/money";
+import { StatTile } from "@/components/stat-tile";
 import { NetWorthEditor } from "@/components/networth/net-worth-editor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  EmptyState,
-  PageHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/display";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getNetWorthSnapshots } from "@/lib/db/queries/history";
 import { getMonthSnapshot } from "@/lib/db/queries/month";
 import { getCurrentUser } from "@/lib/db/user";
@@ -144,19 +138,6 @@ export default async function NetWorthPage({
           </CardContent>
         </Card>
       ) : null}
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-semibold tracking-tight">
-        <Money value={value} tone={value < 0 ? "negative" : "none"} />
-      </p>
     </div>
   );
 }

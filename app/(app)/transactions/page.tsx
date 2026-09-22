@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { StatTile } from "@/components/stat-tile";
 import Link from "next/link";
 import { Download } from "lucide-react";
 
-import { Money } from "@/components/money";
 import { AddTransactionButton } from "@/components/transactions/transaction-dialog";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/display";
+import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { getCategories } from "@/lib/db/queries/reference";
 import { getTransactionPage } from "@/lib/db/queries/transactions";
@@ -76,9 +76,9 @@ export default async function TransactionsPage({
       <TransactionFilters categories={categories} />
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <SummaryTile label="Transactions" value={String(page.total)} />
-        <SummaryTile label="Money in" money={page.totals.income} tone="positive" />
-        <SummaryTile label="Money out" money={page.totals.outflow} />
+        <StatTile label="Transactions" text={String(page.total)} />
+        <StatTile label="Money in" value={page.totals.income} tone="positive" />
+        <StatTile label="Money out" value={page.totals.outflow} />
       </div>
 
       <Card>
@@ -108,29 +108,6 @@ export default async function TransactionsPage({
           </CardFooter>
         ) : null}
       </Card>
-    </div>
-  );
-}
-
-function SummaryTile({
-  label,
-  value,
-  money,
-  tone,
-}: {
-  label: string;
-  value?: string;
-  money?: number;
-  tone?: "positive";
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-semibold tracking-tight tabular">
-        {money !== undefined ? <Money value={money} tone={tone ?? "none"} /> : value}
-      </p>
     </div>
   );
 }

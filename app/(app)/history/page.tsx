@@ -6,18 +6,10 @@ import { GroupedBarChart, TrendLineChart } from "@/components/charts/trend-chart
 import { Money } from "@/components/money";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Badge,
-  EmptyState,
-  PageHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/display";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SLOT } from "@/lib/chart-colors";
 import { getFirstActivityMonth, getMonthlyHistory } from "@/lib/db/queries/history";
 import { getCurrentUser } from "@/lib/db/user";

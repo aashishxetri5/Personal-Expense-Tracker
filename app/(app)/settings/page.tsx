@@ -4,7 +4,7 @@ import { AccountManager } from "@/components/settings/account-manager";
 import { CategoryManager } from "@/components/settings/category-manager";
 import { DataSection } from "@/components/settings/data-section";
 import { ProfileForm } from "@/components/settings/profile-form";
-import { PageHeader } from "@/components/ui/display";
+import { PageHeader } from "@/components/ui/page-header";
 import { getAccounts, getCategories } from "@/lib/db/queries/reference";
 import { getCurrentUser } from "@/lib/db/user";
 

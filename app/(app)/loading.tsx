@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/display";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Shown while a month's data is fetched. The shape mirrors the dashboard so the

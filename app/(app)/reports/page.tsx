@@ -3,19 +3,13 @@ import type { Metadata } from "next";
 import { SpendingDonut } from "@/components/charts/spending-donut";
 import { GroupedBarChart } from "@/components/charts/trend-charts";
 import { Money } from "@/components/money";
+import { StatTile } from "@/components/stat-tile";
 import { PeriodPicker } from "@/components/reports/period-picker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Badge,
-  EmptyState,
-  PageHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/display";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SLOT } from "@/lib/chart-colors";
 import { getMonthlyHistory } from "@/lib/db/queries/history";
 import { getReport, type ReportPeriod } from "@/lib/db/queries/reports";
@@ -104,7 +98,9 @@ export default async function ReportsPage({
             <StatTile
               label="Savings rate"
               text={formatPercent(summary.savingsRate, 0)}
-              badge={summary.savingsRate >= 20 ? "Healthy" : undefined}
+              badge={
+                summary.savingsRate >= 20 ? <Badge variant="success">Healthy</Badge> : undefined
+              }
             />
           </div>
 
@@ -222,30 +218,6 @@ function Row({ label, value, tone = false }: { label: string; value: number; ton
       <dd className="font-medium">
         <Money value={value} tone={tone ? "auto" : "none"} />
       </dd>
-    </div>
-  );
-}
-
-function StatTile({
-  label,
-  value,
-  text,
-  badge,
-}: {
-  label: string;
-  value?: number;
-  text?: string;
-  badge?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-1 flex items-center gap-2 text-lg font-semibold tracking-tight">
-        {value !== undefined ? <Money value={value} /> : <span className="tabular">{text}</span>}
-        {badge ? <Badge variant="success">{badge}</Badge> : null}
-      </p>
     </div>
   );
 }
