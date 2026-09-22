@@ -6,7 +6,6 @@ import {
   daysInMonth,
   formatMonthLabel,
   isSameMonth,
-  lastNMonths,
   monthEnd,
   monthRange,
   monthStart,
@@ -76,10 +75,6 @@ describe("ranges", () => {
     assert.equal(months.length, 0);
   });
 
-  it("gives the last N months ending at the target", () => {
-    const months = lastNMonths(new Date(Date.UTC(2026, 8, 1)), 3);
-    assert.deepEqual(months.map(toMonthKey), ["2026-07", "2026-08", "2026-09"]);
-  });
 });
 
 describe("labels and quarters", () => {

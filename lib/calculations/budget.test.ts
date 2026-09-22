@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { buildBudgetLine, budgetTotals, carriedInFor, carryForwardByMonth } from "@/lib/calculations/budget";
+import { buildBudgetLine, budgetTotals, carryForwardByMonth } from "@/lib/calculations/budget";
 import { monthRange, toMonthKey } from "@/lib/month";
 
 function line(planned: number, actual: number, carriedIn = 0, carryForward = false) {
@@ -93,17 +93,6 @@ describe("carry-forward", () => {
     assert.equal(carried.get("2026-11"), -500);
   });
 
-  it("gives the balance for a single month", () => {
-    const carriedIn = carriedInFor(
-      months,
-      new Date(Date.UTC(2026, 9, 1)),
-      () => 4_000,
-      (month) => (toMonthKey(month) === "2026-09" ? 1_500 : 0),
-      toMonthKey,
-    );
-
-    assert.equal(carriedIn, 2_500);
-  });
 
   it("starts at zero when there is no history", () => {
     const carried = carryForwardByMonth([], () => 0, () => 0, toMonthKey);

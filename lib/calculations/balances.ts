@@ -4,28 +4,35 @@ import { classify } from "@/lib/calculations/ledger";
 import type { LedgerEntry } from "@/lib/types";
 
 /**
- * Running balances for sinking funds, savings goals and investments.
- *
- * All three are derived from the transaction ledger rather than stored as
- * mutable counters, so a fund balance can never disagree with the transactions
- * that produced it. Each accepts the transactions *up to and including* the
- * month being viewed, which is what makes historical browsing truthful: looking
- * at August shows the fund as it stood in August.
+ * Running balances for funds, goals and investments. All three are derived from
+ * the transaction ledger rather than stored as counters, so a balance can never
+ * disagree with the rows that produced it.
  */
 
 export type FundMovement = { contributions: number; withdrawals: number };
 
-/** Contributions in / spending out, per fund id. */
+export type NetWorthTotals = { assets: number; liabilities: number; netWorth: number };
+
+/**
+ * Tallies money in and out of each sinking fund.
+ *
+ * @param entries - Transactions up to and including the month being viewed.
+ * @returns Contributions and withdrawals per fund id.
+ */
 export function fundMovements(entries: readonly LedgerEntry[]): Map<string, FundMovement> {
   const movements = new Map<string, FundMovement>();
 
   for (const entry of entries) {
     if (!entry.futureFundId) continue;
+
     const bucket = classify(entry);
     const current = movements.get(entry.futureFundId) ?? { contributions: 0, withdrawals: 0 };
 
-    if (bucket === "fundContribution") current.contributions = round2(current.contributions + entry.amount);
-    else if (bucket === "fundExpense") current.withdrawals = round2(current.withdrawals + entry.amount);
+    if (bucket === "fundContribution") {
+      current.contributions = round2(current.contributions + entry.amount);
+    } else if (bucket === "fundExpense") {
+      current.withdrawals = round2(current.withdrawals + entry.amount);
+    }
 
     movements.set(entry.futureFundId, current);
   }
@@ -33,17 +40,26 @@ export function fundMovements(entries: readonly LedgerEntry[]): Map<string, Fund
   return movements;
 }
 
-/** Contributions in / withdrawals out, per savings goal id. */
+/**
+ * Tallies money in and out of each savings goal.
+ *
+ * @param entries - Transactions up to and including the month being viewed.
+ * @returns Contributions and withdrawals per goal id.
+ */
 export function goalMovements(entries: readonly LedgerEntry[]): Map<string, FundMovement> {
   const movements = new Map<string, FundMovement>();
 
   for (const entry of entries) {
     if (!entry.savingsGoalId) continue;
+
     const bucket = classify(entry);
     const current = movements.get(entry.savingsGoalId) ?? { contributions: 0, withdrawals: 0 };
 
-    if (bucket === "goalContribution") current.contributions = round2(current.contributions + entry.amount);
-    else if (bucket === "goalWithdrawal") current.withdrawals = round2(current.withdrawals + entry.amount);
+    if (bucket === "goalContribution") {
+      current.contributions = round2(current.contributions + entry.amount);
+    } else if (bucket === "goalWithdrawal") {
+      current.withdrawals = round2(current.withdrawals + entry.amount);
+    }
 
     movements.set(entry.savingsGoalId, current);
   }
@@ -51,7 +67,12 @@ export function goalMovements(entries: readonly LedgerEntry[]): Map<string, Fund
   return movements;
 }
 
-/** Total invested per investment id. */
+/**
+ * Totals contributions into each investment.
+ *
+ * @param entries - Transactions up to and including the month being viewed.
+ * @returns Amount invested per investment id.
+ */
 export function investmentTotals(entries: readonly LedgerEntry[]): Map<string, number> {
   const totals = new Map<string, number>();
 
@@ -63,19 +84,37 @@ export function investmentTotals(entries: readonly LedgerEntry[]): Map<string, n
   return totals;
 }
 
+/**
+ * Applies movements to the balance a fund or goal started with.
+ *
+ * @param openingBalance - Amount held before tracking began.
+ * @param movement - Contributions and withdrawals, or undefined when untouched.
+ * @returns The current balance.
+ */
 export function balanceOf(openingBalance: number, movement: FundMovement | undefined): number {
   if (!movement) return round2(openingBalance);
   return round2(openingBalance + movement.contributions - movement.withdrawals);
 }
 
+/**
+ * Expresses a balance as progress towards a target.
+ *
+ * @param current - The amount held.
+ * @param target - The goal amount; 0 means untargeted.
+ * @returns A percentage from 0 to 100.
+ */
 export function progressOf(current: number, target: number): number {
   if (target <= 0) return current > 0 ? 100 : 0;
   return clamp(round2(percent(current, target)), 0, 100);
 }
 
 /**
- * Whole months of contributions still needed to reach a goal.
- * Returns null when the goal is already met or has no monthly plan.
+ * Estimates how long a goal still needs at its planned contribution.
+ *
+ * @param current - The amount held.
+ * @param target - The goal amount.
+ * @param monthly - The planned monthly contribution.
+ * @returns Whole months remaining, or null when already met or unknowable.
  */
 export function monthsToTarget(current: number, target: number, monthly: number): number | null {
   if (target <= 0 || current >= target) return null;
@@ -83,8 +122,12 @@ export function monthsToTarget(current: number, target: number, monthly: number)
   return Math.ceil((target - current) / monthly);
 }
 
-export type NetWorthTotals = { assets: number; liabilities: number; netWorth: number };
-
+/**
+ * Sums a snapshot's entries into assets, liabilities and net worth.
+ *
+ * @param entries - The snapshot's asset and liability rows.
+ * @returns The three totals; net worth may be negative.
+ */
 export function netWorthTotals(
   entries: readonly { kind: "ASSET" | "LIABILITY"; amount: number }[],
 ): NetWorthTotals {
