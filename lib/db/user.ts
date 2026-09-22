@@ -20,7 +20,7 @@ import {
  * The id is deterministic so concurrent cold starts upsert the same row instead
  * of racing to create two users.
  */
-export const SINGLE_USER_ID = "primary";
+const SINGLE_USER_ID = "primary";
 
 export type CurrentUser = {
   id: string;

@@ -4,7 +4,7 @@ import { monthEnd, monthStart, toDateKey } from "@/lib/month";
 import type { LedgerEntry } from "@/lib/types";
 
 /** Columns the calculation layer needs — nothing more travels over the wire. */
-export const LEDGER_SELECT = {
+const LEDGER_SELECT = {
   type: true,
   amount: true,
   date: true,
@@ -24,7 +24,7 @@ type RawLedgerRow = {
   investmentId: string | null;
 };
 
-export function toLedgerEntry(row: RawLedgerRow): LedgerEntry {
+function toLedgerEntry(row: RawLedgerRow): LedgerEntry {
   return {
     type: row.type,
     amount: toNumber(row.amount),
@@ -40,15 +40,6 @@ export function toLedgerEntry(row: RawLedgerRow): LedgerEntry {
 export async function ledgerForMonth(userId: string, month: Date): Promise<LedgerEntry[]> {
   const rows = await prisma.transaction.findMany({
     where: { userId, date: { gte: monthStart(month), lt: monthEnd(month) } },
-    select: LEDGER_SELECT,
-  });
-  return rows.map(toLedgerEntry);
-}
-
-/** Every transaction up to and including a month — used for running balances. */
-export async function ledgerThroughMonth(userId: string, month: Date): Promise<LedgerEntry[]> {
-  const rows = await prisma.transaction.findMany({
-    where: { userId, date: { lt: monthEnd(month) } },
     select: LEDGER_SELECT,
   });
   return rows.map(toLedgerEntry);

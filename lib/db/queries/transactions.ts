@@ -16,7 +16,7 @@ const TRANSACTION_INCLUDE = {
 
 type TransactionRow = Prisma.TransactionGetPayload<{ include: typeof TRANSACTION_INCLUDE }>;
 
-export function toTransactionDTO(row: TransactionRow): TransactionDTO {
+function toTransactionDTO(row: TransactionRow): TransactionDTO {
   return {
     id: row.id,
     type: row.type,
@@ -131,17 +131,6 @@ export async function getTransactionPage(
     pageCount,
     totals: { income, outflow },
   };
-}
-
-export async function getTransactionById(
-  userId: string,
-  id: string,
-): Promise<TransactionDTO | null> {
-  const row = await prisma.transaction.findFirst({
-    where: { id, userId },
-    include: TRANSACTION_INCLUDE,
-  });
-  return row ? toTransactionDTO(row) : null;
 }
 
 /** Recent activity for the dashboard. */

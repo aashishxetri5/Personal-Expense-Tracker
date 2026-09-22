@@ -2,19 +2,17 @@
 
 import { parseInput, revalidateFinance, toActionError } from "@/lib/actions/helpers";
 import { prisma } from "@/lib/db/prisma";
-import { DEFAULT_BUDGET_PLAN } from "@/lib/db/defaults";
-import { getCurrentUser, getCurrentUserId } from "@/lib/db/user";
+import { getCurrentUserId } from "@/lib/db/user";
 import { parseMonthKey } from "@/lib/month";
 import { actionError, actionOk, type ActionResult } from "@/lib/validations/common";
 import { copyBudgetSchema, saveBudgetSchema } from "@/lib/validations/planning";
 
 /**
- * Save the budget for one month.
+ * Saves one month's plan. The write is scoped to a single MonthlyBudget row, so
+ * editing October cannot reach September — they are different rows.
  *
- * Writes are scoped to a single `MonthlyBudget` row, which is what makes
- * history immutable: editing October cannot reach September because they are
- * different rows. The item rewrite runs inside a transaction so a half-saved
- * budget can never be observed.
+ * @param input - The month, income target, note and budget lines.
+ * @returns The month key that was written, or a failure.
  */
 export async function saveBudget(input: unknown): Promise<ActionResult<{ month: string }>> {
   const parsed = parseInput(saveBudgetSchema, input);
@@ -62,7 +60,12 @@ export async function saveBudget(input: unknown): Promise<ActionResult<{ month: 
   }
 }
 
-/** Duplicate one month's plan into another month, leaving the source untouched. */
+/**
+ * Duplicates one month's plan into another, leaving the source untouched.
+ *
+ * @param input -  month keys.
+ * @returns The month key that was written, or a failure.
+ */
 export async function copyBudget(input: unknown): Promise<ActionResult<{ month: string }>> {
   const parsed = parseInput(copyBudgetSchema, input);
   if (!parsed.ok) return parsed.result;
@@ -105,77 +108,3 @@ export async function copyBudget(input: unknown): Promise<ActionResult<{ month: 
   }
 }
 
-/**
- * Seed a month's budget: copy the previous month if one exists, otherwise fall
- * back to the sensible starting plan. Never overwrites an existing budget.
- */
-export async function startBudgetForMonth(monthKey: string): Promise<ActionResult<{ month: string }>> {
-  const month = parseMonthKey(monthKey);
-
-  try {
-    const user = await getCurrentUser();
-    const existing = await prisma.monthlyBudget.findUnique({
-      where: { userId_month: { userId: user.id, month } },
-    });
-    if (existing) return actionOk({ month: monthKey });
-
-    const previous = await prisma.monthlyBudget.findFirst({
-      where: { userId: user.id, month: { lt: month } },
-      orderBy: { month: "desc" },
-      include: { items: true },
-    });
-
-    if (previous) {
-      await prisma.monthlyBudget.create({
-        data: {
-          userId: user.id,
-          month,
-          incomeTarget: previous.incomeTarget,
-          items: {
-            create: previous.items.map((item) => ({
-              categoryId: item.categoryId,
-              plannedAmount: item.plannedAmount,
-            })),
-          },
-        },
-      });
-    } else {
-      const categories = await prisma.category.findMany({
-        where: { userId: user.id, archivedAt: null, name: { in: Object.keys(DEFAULT_BUDGET_PLAN) } },
-        select: { id: true, name: true },
-      });
-
-      await prisma.monthlyBudget.create({
-        data: {
-          userId: user.id,
-          month,
-          incomeTarget: user.defaultMonthlyIncome,
-          items: {
-            create: categories.map((category) => ({
-              categoryId: category.id,
-              plannedAmount: DEFAULT_BUDGET_PLAN[category.name] ?? 0,
-            })),
-          },
-        },
-      });
-    }
-
-    revalidateFinance();
-    return actionOk({ month: monthKey });
-  } catch (error) {
-    return toActionError(error, "Could not create the budget.");
-  }
-}
-
-export async function deleteBudget(monthKey: string): Promise<ActionResult<{ month: string }>> {
-  const month = parseMonthKey(monthKey);
-
-  try {
-    const userId = await getCurrentUserId();
-    await prisma.monthlyBudget.deleteMany({ where: { userId, month } });
-    revalidateFinance();
-    return actionOk({ month: monthKey });
-  } catch (error) {
-    return toActionError(error, "Could not delete the budget.");
-  }
-}

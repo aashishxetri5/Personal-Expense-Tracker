@@ -9,7 +9,7 @@ import {
   shortTextSchema,
 } from "@/lib/validations/common";
 
-export const transactionTypeSchema = z.enum(["INCOME", "EXPENSE", "INVESTMENT", "TRANSFER"]);
+const transactionTypeSchema = z.enum(["INCOME", "EXPENSE", "INVESTMENT", "TRANSFER"]);
 
 const baseTransaction = z.object({
   type: transactionTypeSchema,

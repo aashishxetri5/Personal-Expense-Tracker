@@ -100,24 +100,6 @@ export const getFirstActivityMonth = cache(async (userId: string): Promise<Date 
   return monthStart(new Date(Math.min(...candidates.map((d) => d.getTime()))));
 });
 
-/** Months that have at least one transaction, newest first, with counts. */
-export const getMonthsWithActivity = cache(
-  async (userId: string): Promise<{ monthKey: string; label: string; count: number }[]> => {
-    const rows = await prisma.$queryRaw<{ month: Date; count: bigint }[]>`
-      SELECT date_trunc('month', "date")::date AS month, COUNT(*)::bigint AS count
-      FROM "transactions"
-      WHERE "userId" = ${userId}
-      GROUP BY 1
-      ORDER BY 1 DESC
-    `;
-
-    return rows.map((row) => {
-      const month = monthStart(new Date(row.month));
-      return { monthKey: toMonthKey(month), label: formatMonthLabel(month), count: Number(row.count) };
-    });
-  },
-);
-
 export const getNetWorthSnapshots = cache(async (userId: string): Promise<NetWorthSnapshotDTO[]> => {
   const rows = await prisma.netWorthSnapshot.findMany({
     where: { userId },
