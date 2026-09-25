@@ -1,10 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Instrument_Serif } from "next/font/google";
 
 import "./globals.css";
 
 import { Providers } from "@/components/providers";
 import { getCurrentUser } from "@/lib/db/user";
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from "@/lib/format";
+
+/** The display face for headings and hero figures; exposed as `font-display`. */
+const display = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -17,8 +27,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fdfdfd" },
-    { media: "(prefers-color-scheme: dark)", color: "#12131a" },
+    { media: "(prefers-color-scheme: light)", color: "#fbf9f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0e19" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -40,7 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={display.variable} suppressHydrationWarning>
       <body className="min-h-dvh bg-background font-sans antialiased">
         <Providers currency={currency} locale={locale}>
           {children}

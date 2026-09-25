@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Lock, LockOpen, ShieldAlert } from "lucide-react";
 
-import styles from "@/components/auth/lock-screen.module.css";
+import styles from "@/components/brand/vault-dial.module.css";
 import { cn } from "@/lib/utils";
 
 export type DialState = "idle" | "pending" | "error" | "success" | "jammed";
@@ -30,20 +30,25 @@ function dialAngle(turns: number): number {
 }
 
 /**
- * A brass combination dial that mirrors the password field: it turns with each
- * keystroke, hunts while the password is checked, rattles when it is wrong and
- * spins open when it is right. Purely decorative.
+ * A brass combination dial. On the lock screen it mirrors the password field:
+ * it turns with each keystroke, hunts while the password is checked, rattles
+ * when it is wrong and spins open when it is right. Elsewhere it doubles as a
+ * gauge, with a short `label` in place of the lock. Purely decorative — pair it
+ * with text that states the same thing.
  *
- * @param props - Characters typed so far, the lock state, and sizing classes.
+ * @param props - The count (keystrokes, or pins to light), the lock state, an
+ *                optional centre label, and sizing classes.
  * @returns The dial.
  */
 export function VaultDial({
   turns = 0,
   state = "idle",
+  label,
   className,
 }: {
   turns?: number;
   state?: DialState;
+  label?: ReactNode;
   className?: string;
 }) {
   const angle = dialAngle(turns) + (state === "success" ? 720 : 0);
@@ -163,7 +168,11 @@ export function VaultDial({
       </svg>
 
       <span className={styles.hub}>
-        <Icon key={state === "success" ? "open" : "shut"} />
+        {label !== undefined ? (
+          <span className={styles.label}>{label}</span>
+        ) : (
+          <Icon key={state === "success" ? "open" : "shut"} />
+        )}
       </span>
 
       {/* Remounts per keystroke so the pointer nudges each time. */}
