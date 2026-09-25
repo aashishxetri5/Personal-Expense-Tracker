@@ -111,12 +111,20 @@ export async function loadCurrentUser(): Promise<CurrentUser> {
 }
 
 /**
- * The current user, memoised for one server render so every component can ask
- * for it without issuing extra queries.
+ * The signed-in user, memoised for one server render. This is the security
+ * boundary every page, action and export route passes through.
  *
  * @returns The current user with their settings.
+ * @throws When no valid session cookie is present.
  */
-export const getCurrentUser = cache(loadCurrentUser);
+export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
+  // Imported lazily so scripts (seed, verification) can use `loadCurrentUser`
+  // without pulling in `next/headers`.
+  const { requireSession } = await import("@/lib/auth/server");
+  await requireSession();
+
+  return loadCurrentUser();
+});
 
 /**
  * Convenience accessor when only the id is needed.

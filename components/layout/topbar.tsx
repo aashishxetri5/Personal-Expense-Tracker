@@ -8,6 +8,7 @@ import { MONTH_AWARE_ROUTES, NAV_ITEMS, isActiveRoute } from "@/components/layou
 import { MonthSelector } from "@/components/layout/month-selector";
 import { SidebarBrand, SidebarNav } from "@/components/layout/sidebar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { AddTransactionButton } from "@/components/transactions/transaction-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -51,6 +52,7 @@ export function Topbar({ name }: { name: string }) {
 
         <div className="ml-auto flex items-center gap-1.5">
           <ThemeToggle />
+          <SignOutButton />
           <AddTransactionButton size="sm" className="hidden sm:inline-flex" />
         </div>
       </div>

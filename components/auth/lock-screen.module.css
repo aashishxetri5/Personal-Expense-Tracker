@@ -1,0 +1,572 @@
+/* ---------------------------------------------------------------------------
+   Lock screen
+   A vault on ledger paper: a brass combination dial that turns as you type,
+   drifting coins, and a growth line climbing toward a goal across the floor
+   of the page. Everything decorative here is aria-hidden; state is announced
+   by the form itself.
+--------------------------------------------------------------------------- */
+
+.screen {
+  /* Brass for the dial and coins. */
+  --gold: oklch(0.74 0.13 78);
+  --gold-bright: oklch(0.87 0.12 88);
+  --gold-deep: oklch(0.5 0.1 62);
+  --gold-ink: oklch(0.55 0.12 66);
+
+  /* The dial face stays dark in both themes — it is an object, not a surface. */
+  --ink-lift: oklch(0.33 0.035 272);
+  --ink: oklch(0.24 0.03 272);
+  --ink-deep: oklch(0.17 0.028 272);
+
+  --paper: oklch(0.982 0.01 86);
+  --rule: oklch(0.5 0.08 272 / 0.085);
+  --rule-faint: oklch(0.5 0.08 272 / 0.035);
+  --margin-rule: oklch(0.62 0.17 18 / 0.3);
+  --glow-a: oklch(0.62 0.2 275 / 0.26);
+  --glow-b: oklch(0.82 0.14 82 / 0.4);
+
+  background-color: var(--paper);
+  isolation: isolate;
+}
+
+:global(.dark) .screen {
+  --gold-ink: var(--gold-bright);
+  --paper: oklch(0.155 0.022 272);
+  --rule: oklch(0.8 0.05 272 / 0.06);
+  --rule-faint: oklch(0.8 0.05 272 / 0.025);
+  --margin-rule: oklch(0.65 0.17 18 / 0.24);
+  --glow-a: oklch(0.52 0.22 278 / 0.5);
+  --glow-b: oklch(0.75 0.14 78 / 0.16);
+}
+
+.display {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+.goldInk {
+  color: var(--gold-ink);
+}
+
+.goldRule {
+  background-color: var(--gold);
+}
+
+/* --- Ledger paper -------------------------------------------------------- */
+
+.ledger {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to bottom, var(--rule) 1px, transparent 1px),
+    linear-gradient(to right, var(--rule-faint) 1px, transparent 1px);
+  background-size:
+    100% 34px,
+    34px 100%;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 40%, #000 25%, transparent 85%);
+}
+
+/* The double red margin rule of an accounting book, aligned to the content column. */
+.marginRule {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: max(2rem, calc(50% - 34rem));
+  width: 5px;
+  border-inline: 1px solid var(--margin-rule);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+.glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  animation: drift 24s ease-in-out infinite alternate;
+}
+
+.glowA {
+  width: 44rem;
+  height: 44rem;
+  top: -18rem;
+  left: -14rem;
+  background: var(--glow-a);
+}
+
+.glowB {
+  width: 38rem;
+  height: 38rem;
+  right: -12rem;
+  bottom: -14rem;
+  background: var(--glow-b);
+  animation-direction: alternate-reverse;
+  animation-duration: 30s;
+}
+
+/* --- Growth chart -------------------------------------------------------- */
+
+.chart {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: clamp(220px, 42vh, 440px);
+  mask-image: linear-gradient(to right, transparent, #000 22%);
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chartLine {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 2.8s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}
+
+.chartArea {
+  opacity: 0;
+  animation: appear 1.6s ease 1.6s forwards;
+}
+
+.goalLine {
+  stroke: var(--gold);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+  stroke-dasharray: 4 6;
+  vector-effect: non-scaling-stroke;
+}
+
+.goalLabel {
+  position: absolute;
+  right: 1.25rem;
+  top: calc(23.33% - 1.35rem);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+  opacity: 0.75;
+}
+
+.chartDot {
+  position: absolute;
+  left: 96%;
+  top: 28%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 9999px;
+  background: var(--gold-bright);
+  box-shadow:
+    0 0 0 4px color-mix(in oklch, var(--gold) 28%, transparent),
+    0 0 20px var(--gold);
+  opacity: 0;
+  animation: appear 0.5s ease 3s forwards;
+}
+
+.chartDot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 1px solid var(--gold);
+  opacity: 0;
+  animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) 3.3s infinite;
+}
+
+/* --- Coins --------------------------------------------------------------- */
+
+.coin {
+  position: absolute;
+  width: calc(var(--size) * 0.62);
+  aspect-ratio: 1;
+  filter: blur(var(--blur, 0px)) drop-shadow(0 8px 10px oklch(0.35 0.08 70 / 0.22));
+  animation: bob var(--bob, 10s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+
+.coinFace {
+  width: 100%;
+  height: 100%;
+  animation: flip var(--spin, 8s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@media (min-width: 768px) {
+  .coin {
+    width: var(--size);
+  }
+}
+
+/* --- Card ---------------------------------------------------------------- */
+
+.card {
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.55),
+    0 40px 90px -36px oklch(0.3 0.09 272 / 0.4),
+    0 14px 28px -14px oklch(0.3 0.05 272 / 0.16);
+}
+
+:global(.dark) .card {
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.06),
+    0 40px 90px -30px oklch(0 0 0 / 0.7),
+    0 14px 28px -14px oklch(0 0 0 / 0.5);
+}
+
+/* A hairline border that catches brass light at the top-left corner. */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    155deg,
+    color-mix(in oklch, var(--gold) 80%, transparent),
+    color-mix(in oklch, var(--border) 90%, transparent) 32%,
+    color-mix(in oklch, var(--border) 90%, transparent) 68%,
+    color-mix(in oklch, var(--primary) 50%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+.enter {
+  animation: rise-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+
+/* The unlock button: a sheen sweeps across on hover. */
+.unlock {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(180deg, oklch(1 0 0 / 0.16), transparent 60%);
+}
+
+.unlock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 0.32) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.unlock:hover::after {
+  transform: translateX(120%);
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.unlock:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* --- Vault dial ---------------------------------------------------------- */
+
+.dial {
+  --halo: color-mix(in oklch, var(--gold) 42%, transparent);
+  position: relative;
+  flex: none;
+  filter: drop-shadow(0 22px 26px oklch(0.2 0.06 272 / 0.35));
+}
+
+.dial[data-state="error"],
+.dial[data-state="jammed"] {
+  --halo: color-mix(in oklch, var(--destructive) 45%, transparent);
+}
+
+.dial[data-state="success"] {
+  --halo: color-mix(in oklch, var(--success) 50%, transparent);
+}
+
+.dial[data-state="error"] {
+  animation: rattle 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.halo {
+  position: absolute;
+  inset: -24%;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--halo), transparent 72%);
+  animation: breathe 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.burst {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--success);
+  animation: burst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+/* Springy, like a dial clicking past its detents. */
+.face {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.dial[data-state="success"] .face {
+  transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faceSpin {
+  position: absolute;
+  inset: 0;
+}
+
+.dial[data-state="pending"] .faceSpin {
+  animation: hunt 1.4s ease-in-out infinite;
+}
+
+.numeral {
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: oklch(0.93 0.02 85 / 0.78);
+}
+
+.numeralZero {
+  fill: var(--gold-bright);
+}
+
+.pin {
+  fill: oklch(1 0 0 / 0.12);
+  transition: fill 0.25s ease;
+}
+
+.pin[data-on="true"] {
+  fill: var(--gold-bright);
+}
+
+.dial[data-state="pending"] .pin {
+  animation: chase 1s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 100ms);
+}
+
+.dial[data-state="error"] .pin,
+.dial[data-state="jammed"] .pin {
+  fill: var(--destructive);
+}
+
+.dial[data-state="success"] .pin {
+  fill: var(--success);
+}
+
+.hub {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--gold-bright);
+  transition: color 0.3s ease;
+}
+
+.hub svg {
+  width: 21%;
+  height: 21%;
+  stroke-width: 1.75;
+}
+
+.dial[data-state="error"] .hub,
+.dial[data-state="jammed"] .hub {
+  color: var(--destructive);
+}
+
+.dial[data-state="success"] .hub {
+  color: var(--success);
+}
+
+.dial[data-state="success"] .hub svg {
+  animation: pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The fixed brass pointer at twelve o'clock; it nudges on every keystroke. */
+.indicator {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 14px;
+  height: 12px;
+  margin-left: -7px;
+  background: linear-gradient(to bottom, var(--gold-bright), var(--gold));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  animation: nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- Keyframes ----------------------------------------------------------- */
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5rem, 3rem, 0) scale(1.12);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(-10px) rotate(-8deg);
+  }
+  to {
+    transform: translateY(14px) rotate(10deg);
+  }
+}
+
+/* A coin catching the light as it turns edge-on and back. */
+@keyframes flip {
+  0%,
+  42% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.08);
+  }
+  58%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rattle {
+  10%,
+  90% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+  20%,
+  80% {
+    transform: translateX(3px) rotate(2deg);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-6px) rotate(-3deg);
+  }
+  40%,
+  60% {
+    transform: translateX(6px) rotate(3deg);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes burst {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+@keyframes hunt {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(32deg);
+  }
+  70% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes chase {
+  0%,
+  100% {
+    fill: oklch(1 0 0 / 0.12);
+  }
+  30% {
+    fill: var(--gold-bright);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6) rotate(-12deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes nudge {
+  40% {
+    transform: translateY(3px);
+  }
+}
