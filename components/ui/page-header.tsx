@@ -45,7 +45,7 @@ export function PageHeader({ title, description, action, className }: PageHeader
     >
       <div className="min-w-0 space-y-2">
         <PageEyebrow />
-        <h1 className="font-display text-[2.15rem] leading-[1.05] tracking-[-0.01em] sm:text-[2.65rem]">
+        <h1 className="font-display text-[1.9rem] leading-[1.1] font-medium tracking-[-0.02em] sm:text-[2.3rem]">
           <AccentTitle title={title} />
         </h1>
         {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}

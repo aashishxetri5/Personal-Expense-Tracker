@@ -51,7 +51,7 @@ export function Topbar({ name }: { name: string }) {
         </Dialog>
 
         <BrandMark className="size-7 lg:hidden" />
-        <h2 className="truncate font-display text-[1.35rem] leading-none lg:hidden">
+        <h2 className="truncate font-display text-[1.15rem] leading-none font-semibold tracking-[-0.01em] lg:hidden">
           {current?.label ?? "Finance"}
         </h2>
 

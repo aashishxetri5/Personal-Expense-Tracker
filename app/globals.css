@@ -191,7 +191,7 @@
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
   --shadow-card: var(--card-shadow);
   --shadow-lift: var(--lift-shadow);
@@ -211,8 +211,7 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "cv11", "ss01";
-    font-variation-settings: "opsz" 32;
+    font-feature-settings: "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -225,6 +224,10 @@
 
   ::selection {
     background-color: color-mix(in oklch, var(--primary) 22%, transparent);
+  }
+
+  .font-display {
+    font-variation-settings: "SOFT" 40;
   }
 
   /* Numbers in tables and cards line up column-wise. */

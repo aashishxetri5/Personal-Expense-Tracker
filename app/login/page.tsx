@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { AlertTriangle, Wallet } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 import styles from "@/components/auth/lock-screen.module.css";
 import { LoginForm } from "@/components/auth/login-form";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { VaultDial } from "@/components/brand/vault-dial";
 import { VaultScene } from "@/components/auth/vault-scene";
 import { NAV_ITEMS } from "@/components/layout/nav-config";
@@ -27,7 +28,7 @@ function UnprotectedNotice() {
     <div className="flex flex-col items-center text-center">
       <VaultDial state="jammed" className="-mt-[82px] size-[164px] sm:-mt-[92px] sm:size-[184px]" />
 
-      <h1 className={cn(styles.display, "mt-6 text-[2.15rem] leading-[1.08] sm:text-[2.5rem]")}>
+      <h1 className={cn(styles.display, "mt-6 text-[1.85rem] leading-[1.1] sm:text-[2.1rem]")}>
         This vault has <em className="text-destructive">no lock.</em>
       </h1>
 
@@ -66,10 +67,8 @@ export default async function LoginPage({
 
       <header className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <Wallet className="size-4" />
-          </span>
-          <span className="text-sm font-semibold tracking-tight">Finance</span>
+          <BrandMark className="size-9" />
+          <span className="font-display text-[1.2rem] leading-none font-semibold tracking-[-0.02em]">Finance</span>
         </div>
         <ThemeToggle />
       </header>
@@ -86,7 +85,7 @@ export default async function LoginPage({
             Personal ledger
           </p>
           <p
-            className={cn(styles.display, styles.enter, "mt-6 text-6xl leading-[1.02] xl:text-7xl")}
+            className={cn(styles.display, styles.enter, "mt-6 text-5xl leading-[1.05] xl:text-6xl")}
             style={{ "--i": 1 } as React.CSSProperties}
           >
             Every coin counted.

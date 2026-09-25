@@ -79,7 +79,7 @@ export function LoginForm({ next }: { next?: string }) {
         className="-mt-[82px] size-[164px] sm:-mt-[92px] sm:size-[184px]"
       />
 
-      <h1 className={cn(styles.display, "mt-6 text-[2.15rem] leading-[1.08] sm:text-[2.5rem]")}>
+      <h1 className={cn(styles.display, "mt-6 text-[1.85rem] leading-[1.1] sm:text-[2.1rem]")}>
         {copy.lead} <em className={styles.goldInk}>{copy.accent}</em>
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">{copy.sub}</p>

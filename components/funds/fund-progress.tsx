@@ -63,7 +63,7 @@ export function FundCard({
     >
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="flex items-center gap-2 font-display text-[1.25rem] leading-tight">
+          <h3 className="flex items-center gap-2 font-display text-[1.05rem] leading-snug font-semibold">
             <ColorDot color={theme.series(fund.color)} />
             <span className="truncate">{fund.name}</span>
           </h3>

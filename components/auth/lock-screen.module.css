@@ -29,9 +29,10 @@
 }
 
 .display {
-  font-family: var(--font-instrument), Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  letter-spacing: -0.012em;
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-variation-settings: "SOFT" 40;
+  letter-spacing: -0.02em;
 }
 
 .goldInk {

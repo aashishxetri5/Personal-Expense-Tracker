@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif } from "next/font/google";
+import { Fraunces, Geist } from "next/font/google";
 
 import "./globals.css";
 
@@ -7,12 +7,22 @@ import { Providers } from "@/components/providers";
 import { getCurrentUser } from "@/lib/db/user";
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from "@/lib/format";
 
-/** The display face for headings and hero figures; exposed as `font-display`. */
-const display = Instrument_Serif({
+/** The interface face — crisp at small sizes, with even-width figures for money. */
+const sans = Geist({
   subsets: ["latin"],
-  weight: "400",
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+
+/**
+ * The display face for headings and hero figures, exposed as `font-display`.
+ * Variable, with optical sizing, so it stays sturdy small and refined large.
+ */
+const display = Fraunces({
+  subsets: ["latin"],
   style: ["normal", "italic"],
-  variable: "--font-instrument",
+  axes: ["opsz", "SOFT"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -50,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" className={display.variable} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${display.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh bg-background font-sans antialiased">
         <Providers currency={currency} locale={locale}>
           {children}

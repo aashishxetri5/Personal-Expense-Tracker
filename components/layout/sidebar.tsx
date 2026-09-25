@@ -89,7 +89,7 @@ export function SidebarBrand({ name }: { name: string }) {
     <div className="flex items-center gap-3 px-5 pt-5 pb-5">
       <BrandMark className="size-9" />
       <span className="flex min-w-0 flex-col">
-        <span className="font-display text-[1.4rem] leading-none tracking-tight text-foreground">
+        <span className="font-display text-[1.2rem] leading-none font-semibold tracking-[-0.02em] text-foreground">
           Finance
         </span>
         <span className="mt-1 truncate text-[11px] text-muted-foreground">
@@ -114,7 +114,7 @@ export function SidebarBackdrop() {
 function SidebarMotto() {
   return (
     <div className="mx-3 mb-3 rounded-xl border border-sidebar-border bg-white/[0.03] px-4 py-3">
-      <p className="font-display text-[15px] leading-snug text-gold-ink italic">Every coin counted.</p>
+      <p className="font-display text-[14px] leading-snug font-medium text-gold-ink italic">Every coin counted.</p>
       <p className="text-[11px] text-muted-foreground">Every month remembered.</p>
     </div>
   );
