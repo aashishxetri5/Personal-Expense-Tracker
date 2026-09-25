@@ -7,8 +7,10 @@ import { cn } from "@/lib/utils";
 
 /** Fired by code that navigates without a link, such as the month stepper. */
 export const NAV_START_EVENT = "finance:navigation-start";
+/** Fired by a loading skeleton as it mounts (+1) and unmounts (−1). */
+const LOADING_EVENT = "finance:loading";
 
-/** Navigations that finish sooner than this never show the bar, so it cannot flicker. */
+/** Loads that finish sooner than this never show the bar, so it cannot flicker. */
 const SHOW_AFTER_MS = 120;
 /** Give up if a navigation never lands (an error page, a cancelled click). */
 const GIVE_UP_AFTER_MS = 12_000;
@@ -16,37 +18,40 @@ const GIVE_UP_AFTER_MS = 12_000;
 type Phase = "idle" | "running" | "done";
 
 /**
+ * Keeps the progress bar running for as long as a loading skeleton is on
+ * screen. Render it inside `loading.tsx`: with a loading boundary, Next changes
+ * the URL immediately, so the URL alone cannot say when the page has arrived.
+ *
+ * @returns Nothing visible.
+ */
+export function LoadingSignal() {
+  React.useEffect(() => {
+    window.dispatchEvent(new CustomEvent(LOADING_EVENT, { detail: 1 }));
+    return () => {
+      window.dispatchEvent(new CustomEvent(LOADING_EVENT, { detail: -1 }));
+    };
+  }, []);
+  return null;
+}
+
+/**
  * A thin brass bar across the top of the page while a page or month loads. It
- * creeps toward the end while waiting and snaps to full when the new URL lands.
+ * creeps toward the end while waiting and snaps to full when the page lands.
  *
  * @returns The progress bar, hidden from assistive technology.
  */
 export function NavProgress() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [waiting, setWaiting] = React.useState(false);
+  const [loaders, setLoaders] = React.useState(0);
   const [phase, setPhase] = React.useState<Phase>("idle");
-  const timers = React.useRef<number[]>([]);
-  const pending = React.useRef(false);
 
-  const clearTimers = () => {
-    timers.current.forEach((id) => window.clearTimeout(id));
-    timers.current = [];
-  };
+  const busy = waiting || loaders > 0;
 
-  const start = React.useCallback(() => {
-    clearTimers();
-    pending.current = true;
-    timers.current.push(
-      window.setTimeout(() => pending.current && setPhase("running"), SHOW_AFTER_MS),
-      window.setTimeout(() => {
-        pending.current = false;
-        setPhase("idle");
-      }, GIVE_UP_AFTER_MS),
-    );
-  }, []);
-
-  // Start on any same-origin link click that goes somewhere new.
+  // Start on any same-origin link click that goes somewhere new, or on request.
   React.useEffect(() => {
+    const start = () => setWaiting(true);
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0) return;
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -60,23 +65,39 @@ export function NavProgress() {
 
       start();
     };
+    const onLoading = (event: Event) => {
+      const delta = (event as CustomEvent<number>).detail;
+      setLoaders((count) => Math.max(0, count + delta));
+    };
 
     document.addEventListener("click", onClick, true);
     window.addEventListener(NAV_START_EVENT, start);
+    window.addEventListener(LOADING_EVENT, onLoading);
     return () => {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener(NAV_START_EVENT, start);
+      window.removeEventListener(LOADING_EVENT, onLoading);
     };
-  }, [start]);
+  }, []);
 
-  // The URL changed: the navigation has landed.
+  // The URL changed: the navigation itself has landed (a skeleton may remain).
   const location = `${pathname}?${searchParams.toString()}`;
+  React.useEffect(() => setWaiting(false), [location]);
+
+  // A click that never navigates must not leave the bar running.
   React.useEffect(() => {
-    if (!pending.current) return;
-    pending.current = false;
-    clearTimers();
-    setPhase((current) => (current === "running" ? "done" : "idle"));
-  }, [location]);
+    if (!waiting) return;
+    const id = window.setTimeout(() => setWaiting(false), GIVE_UP_AFTER_MS);
+    return () => window.clearTimeout(id);
+  }, [waiting]);
+
+  React.useEffect(() => {
+    if (busy) {
+      const id = window.setTimeout(() => setPhase("running"), SHOW_AFTER_MS);
+      return () => window.clearTimeout(id);
+    }
+    setPhase((current) => (current === "running" ? "done" : current));
+  }, [busy]);
 
   React.useEffect(() => {
     if (phase !== "done") return;
@@ -84,16 +105,15 @@ export function NavProgress() {
     return () => window.clearTimeout(id);
   }, [phase]);
 
-  React.useEffect(() => clearTimers, []);
-
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px]">
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-60 h-0.75">
       <div
         className={cn(
           "h-full origin-left bg-linear-to-r from-gold-deep via-gold to-gold-bright shadow-[0_0_10px_var(--gold)]",
           phase === "idle" && "scale-x-0 opacity-0 transition-none",
           // A long ease-out: fast at first, then creeping, never quite finishing.
-          phase === "running" && "scale-x-[0.85] opacity-100 transition-transform duration-[6000ms] ease-[cubic-bezier(0.1,0.7,0.2,1)]",
+          phase === "running" &&
+            "scale-x-[0.85] opacity-100 transition-transform duration-6000 ease-[cubic-bezier(0.1,0.7,0.2,1)]",
           phase === "done" && "scale-x-100 opacity-0 transition-[transform,opacity] duration-300 [transition-delay:0ms,150ms]",
         )}
       />

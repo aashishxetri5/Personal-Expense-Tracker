@@ -1,3 +1,4 @@
+import { LoadingSignal } from "@/components/layout/nav-progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -8,6 +9,8 @@ export default function Loading() {
   return (
     <div className="space-y-6" aria-busy="true" aria-live="polite">
       <span className="sr-only">Loading…</span>
+      {/* Keeps the brass progress bar at the top running until the page arrives. */}
+      <LoadingSignal />
 
       <div className="dark rounded-3xl border border-sidebar-border bg-sidebar p-6 sm:p-8">
         <Skeleton className="h-3 w-40" />

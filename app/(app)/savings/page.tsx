@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { StatTile } from "@/components/stat-tile";
 
 import { NewGoalButton } from "@/components/savings/goal-dialog";
@@ -6,6 +7,7 @@ import { GoalGrid } from "@/components/savings/goal-grid";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { CardGridSkeleton, CardSkeleton, StatsSkeleton } from "@/components/ui/skeletons";
 import { getMonthSnapshot } from "@/lib/db/queries/month";
 import { getTransactionPage } from "@/lib/db/queries/transactions";
 import { getCurrentUser } from "@/lib/db/user";
@@ -21,6 +23,24 @@ export default async function SavingsPage({
   searchParams: Promise<{ m?: string }>;
 }) {
   const params = await searchParams;
+  const month = parseMonthKey(params.m);
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Savings goals"
+        description="Money you have deliberately set aside. Emergency savings are kept separate from everything else."
+        action={<NewGoalButton />}
+      />
+
+      <Suspense key={JSON.stringify(params)} fallback={<SavingsSkeleton />}>
+        <SavingsContent params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+/** The page body, streamed in behind its skeleton once the data is ready. */
+async function SavingsContent({ params }: { params: { m?: string } }) {
   const month = parseMonthKey(params.m);
   const user = await getCurrentUser();
 
@@ -46,53 +66,58 @@ export default async function SavingsPage({
   const savedThisMonth = active.reduce((sum, goal) => sum + goal.contributedThisMonth, 0);
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Savings goals"
-        description="Money you have deliberately set aside. Emergency savings are kept separate from everything else."
-        action={<NewGoalButton />}
-      />
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatTile label="Total saved" value={totalSaved} />
-        <StatTile label="Combined target" value={totalTarget} />
-        <StatTile label={`Added in ${formatMonthLabel(month)}`} value={savedThisMonth} />
-      </div>
-
-      {emergency.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground">Emergency fund</h2>
-          <GoalGrid goals={emergency} />
-        </section>
-      ) : null}
-
-      <section className="space-y-3">
-        {emergency.length > 0 && general.length > 0 ? (
-          <h2 className="text-sm font-semibold text-muted-foreground">Other goals</h2>
-        ) : null}
-        <GoalGrid goals={general} />
-      </section>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Savings activity in {formatMonthLabel(month)}</CardTitle>
-          <CardDescription>Contributions in, and anything spent out of a goal.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <TransactionList
-            transactions={goalActivity}
-            emptyTitle={`No savings movements in ${formatMonthLabel(month)}`}
-            emptyDescription="Add a transfer into a goal to start building it up."
-          />
-        </CardContent>
-      </Card>
-
-      {archived.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground">Archived goals</h2>
-          <GoalGrid goals={archived} />
-        </section>
-      ) : null}
+    <>
+    <div className="grid gap-3 sm:grid-cols-3">
+      <StatTile label="Total saved" value={totalSaved} />
+      <StatTile label="Combined target" value={totalTarget} />
+      <StatTile label={`Added in ${formatMonthLabel(month)}`} value={savedThisMonth} />
     </div>
+
+    {emergency.length > 0 ? (
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-muted-foreground">Emergency fund</h2>
+        <GoalGrid goals={emergency} />
+      </section>
+    ) : null}
+
+    <section className="space-y-3">
+      {emergency.length > 0 && general.length > 0 ? (
+        <h2 className="text-sm font-semibold text-muted-foreground">Other goals</h2>
+      ) : null}
+      <GoalGrid goals={general} />
+    </section>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Savings activity in {formatMonthLabel(month)}</CardTitle>
+        <CardDescription>Contributions in, and anything spent out of a goal.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <TransactionList
+          transactions={goalActivity}
+          emptyTitle={`No savings movements in ${formatMonthLabel(month)}`}
+          emptyDescription="Add a transfer into a goal to start building it up."
+        />
+      </CardContent>
+    </Card>
+
+    {archived.length > 0 ? (
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-muted-foreground">Archived goals</h2>
+        <GoalGrid goals={archived} />
+      </section>
+    ) : null}
+    </>
+  );
+}
+
+/** Stands in for the page body while its data loads; the header is already on screen. */
+function SavingsSkeleton() {
+  return (
+    <>
+      <StatsSkeleton />
+    <CardGridSkeleton />
+    <CardSkeleton rows={4} />
+    </>
   );
 }

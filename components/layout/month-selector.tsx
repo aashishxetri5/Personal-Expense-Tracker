@@ -4,6 +4,7 @@ import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
+import { NAV_START_EVENT } from "@/components/layout/nav-progress";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -70,6 +71,7 @@ export function MonthSelector({ className }: { className?: string }) {
 
   const navigate = React.useCallback(
     (month: Date) => {
+      window.dispatchEvent(new Event(NAV_START_EVENT));
       startTransition(() => {
         router.push(hrefFor(month), { scroll: false });
       });
