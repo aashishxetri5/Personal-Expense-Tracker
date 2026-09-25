@@ -93,7 +93,7 @@ export function SidebarBrand({ name }: { name: string }) {
           Finance
         </span>
         <span className="mt-1 truncate text-[11px] text-muted-foreground">
-          {name ? `${name}’s ledger` : "Personal ledger"}
+          {name}
         </span>
       </span>
     </div>

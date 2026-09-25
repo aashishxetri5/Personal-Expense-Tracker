@@ -103,12 +103,16 @@ export function SummaryCards({
   return (
     <section
       aria-label="Month summary"
-      className={cn("grid gap-3 sm:grid-cols-2 xl:grid-cols-5", className)}
+      className={cn("grid grid-cols-2 gap-3 xl:grid-cols-5", className)}
     >
       {metrics.map((metric, index) => (
         <Card
           key={metric.key}
-          className="animate-[rise_0.3s_cubic-bezier(0.16,1,0.3,1)_both] p-4 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+          className={cn(
+            "animate-[rise_0.3s_cubic-bezier(0.16,1,0.3,1)_both] p-4 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift",
+            // Five cards in a two-column grid: the last one takes the full row.
+            index === metrics.length - 1 && "col-span-2 xl:col-span-1",
+          )}
           style={{ animationDelay: `${80 + index * 45}ms` }}
         >
           <div className="flex items-center justify-between gap-2">

@@ -96,7 +96,7 @@ export function GoalProgressCard({
     <Card className={cn(highlight && "ring-1 ring-primary/15")}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Icon className="size-4 text-muted-foreground" />
+          <Icon className="size-4 text-gold-ink" />
           {goal.name}
         </CardTitle>
         <CardDescription>

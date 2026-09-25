@@ -14,9 +14,12 @@ export default function Loading() {
         <Skeleton className="h-4 w-64" />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="rounded-2xl border border-border/80 bg-card shadow-card p-4">
+          <div
+            key={index}
+            className={`rounded-2xl border border-border/80 bg-card p-4 shadow-card ${index === 4 ? "col-span-2 xl:col-span-1" : ""}`}
+          >
             <Skeleton className="h-3 w-16" />
             <Skeleton className="mt-3 h-6 w-28" />
             <Skeleton className="mt-2 h-3 w-20" />

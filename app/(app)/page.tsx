@@ -158,7 +158,7 @@ export default async function DashboardPage({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="size-4 text-muted-foreground" />
+                <Sparkles className="size-4 text-gold-ink" />
                 {lifestyle.categoryName}
               </CardTitle>
               <CardDescription>An allowance that rolls over, not a monthly quota.</CardDescription>
@@ -205,7 +205,7 @@ export default async function DashboardPage({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="size-4 text-muted-foreground" />
+                <Target className="size-4 text-gold-ink" />
                 Emergency fund
               </CardTitle>
             </CardHeader>
@@ -227,7 +227,7 @@ export default async function DashboardPage({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PiggyBank className="size-4 text-muted-foreground" />
+              <PiggyBank className="size-4 text-gold-ink" />
               Future funds
             </CardTitle>
             <CardDescription>
