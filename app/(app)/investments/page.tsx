@@ -26,7 +26,7 @@ export default async function InvestmentsPage({
   searchParams: Promise<{ m?: string }>;
 }) {
   const params = await searchParams;
-  const month = parseMonthKey(params.m);
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -77,68 +77,68 @@ async function InvestmentsContent({ params }: { params: { m?: string } }) {
 
   return (
     <>
-    <div className="grid gap-3 sm:grid-cols-3">
-      <StatTile label="Total invested" value={totalInvested} />
-      <StatTile label={`${month.getUTCFullYear()} so far`} value={thisYear} />
-      <StatTile label={formatMonthLabel(month)} value={thisMonth} />
-    </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatTile label="Total invested" value={totalInvested} />
+        <StatTile label={`${month.getUTCFullYear()} so far`} value={thisYear} />
+        <StatTile label={formatMonthLabel(month)} value={thisMonth} />
+      </div>
 
-    <InvestmentGrid investments={active} />
+      <InvestmentGrid investments={active} />
 
-    <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Contributions over time</CardTitle>
+            <CardDescription>What went in each month over the last year.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TrendLineChart
+              data={trend}
+              caption="Investment contributions by month"
+              series={[{ key: "invested", name: "Invested", color: SLOT.violet }]}
+              height={220}
+              area
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Cumulative total</CardTitle>
+            <CardDescription>Everything contributed, added up.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TrendLineChart
+              data={trend}
+              caption="Cumulative invested"
+              series={[{ key: "total", name: "Total invested", color: SLOT.blue }]}
+              height={220}
+              area
+            />
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Contributions over time</CardTitle>
-          <CardDescription>What went in each month over the last year.</CardDescription>
+          <CardTitle>Investment history in {formatMonthLabel(month)}</CardTitle>
+          <CardDescription>Every contribution recorded for the month you are viewing.</CardDescription>
         </CardHeader>
         <CardContent>
-          <TrendLineChart
-            data={trend}
-            caption="Investment contributions by month"
-            series={[{ key: "invested", name: "Invested", color: SLOT.violet }]}
-            height={220}
-            area
+          <TransactionList
+            transactions={activity.rows}
+            emptyTitle={`No contributions in ${formatMonthLabel(month)}`}
+            emptyDescription="Record an investment transaction and it will appear here."
           />
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Cumulative total</CardTitle>
-          <CardDescription>Everything contributed, added up.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <TrendLineChart
-            data={trend}
-            caption="Cumulative invested"
-            series={[{ key: "total", name: "Total invested", color: SLOT.blue }]}
-            height={220}
-            area
-          />
-        </CardContent>
-      </Card>
-    </div>
-
-    <Card>
-      <CardHeader>
-        <CardTitle>Investment history in {formatMonthLabel(month)}</CardTitle>
-        <CardDescription>Every contribution recorded for the month you are viewing.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TransactionList
-          transactions={activity.rows}
-          emptyTitle={`No contributions in ${formatMonthLabel(month)}`}
-          emptyDescription="Record an investment transaction and it will appear here."
-        />
-      </CardContent>
-    </Card>
-
-    {archived.length > 0 ? (
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Archived</h2>
-        <InvestmentGrid investments={archived} />
-      </section>
-    ) : null}
+      {archived.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Archived</h2>
+          <InvestmentGrid investments={archived} />
+        </section>
+      ) : null}
     </>
   );
 }

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 
 import { MobileNav } from "@/components/layout/mobile-nav";
-import { NavProgress } from "@/components/layout/nav-progress";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import {
@@ -35,7 +34,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <TransactionDialogProvider options={options}>
         <div className="relative isolate min-h-dvh lg:pl-64">
           <PaperBackdrop />
-          <NavProgress />
           <Sidebar name={user.name} />
           <Topbar name={user.name} />
 

@@ -23,7 +23,7 @@ export default async function FutureFundsPage({
   searchParams: Promise<{ m?: string }>;
 }) {
   const params = await searchParams;
-  const month = parseMonthKey(params.m);
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -65,36 +65,36 @@ async function FutureFundsContent({ params }: { params: { m?: string } }) {
 
   return (
     <>
-    <div className="grid gap-3 sm:grid-cols-3">
-      <StatTile label="Reserved" value={totalBalance} />
-      <StatTile label="Combined target" value={totalTarget} />
-      <StatTile label="Planned each month" value={totalMonthly} />
-    </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatTile label="Reserved" value={totalBalance} />
+        <StatTile label="Combined target" value={totalTarget} />
+        <StatTile label="Planned each month" value={totalMonthly} />
+      </div>
 
-    <FundGrid funds={active} />
+      <FundGrid funds={active} />
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Fund activity in {formatMonthLabel(month)}</CardTitle>
-        <CardDescription>
-          Contributions in and spending out, for the month you are viewing.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TransactionList
-          transactions={fundActivity}
-          emptyTitle={`No fund movements in ${formatMonthLabel(month)}`}
-          emptyDescription="Record a transfer into a fund, or an expense paid from one, and it will show up here."
-        />
-      </CardContent>
-    </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Fund activity in {formatMonthLabel(month)}</CardTitle>
+          <CardDescription>
+            Contributions in and spending out, for the month you are viewing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TransactionList
+            transactions={fundActivity}
+            emptyTitle={`No fund movements in ${formatMonthLabel(month)}`}
+            emptyDescription="Record a transfer into a fund, or an expense paid from one, and it will show up here."
+          />
+        </CardContent>
+      </Card>
 
-    {archived.length > 0 ? (
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Archived funds</h2>
-        <FundGrid funds={archived} />
-      </section>
-    ) : null}
+      {archived.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Archived funds</h2>
+          <FundGrid funds={archived} />
+        </section>
+      ) : null}
     </>
   );
 }

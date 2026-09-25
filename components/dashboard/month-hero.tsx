@@ -6,6 +6,7 @@ import { SummaryExplainer } from "@/components/dashboard/summary-explainer";
 import { Money } from "@/components/money";
 import { AddTransactionButton } from "@/components/transactions/transaction-dialog";
 import { AccentTitle } from "@/components/ui/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { MonthlySummary } from "@/lib/calculations/ledger";
 import { CATEGORICAL_SLOTS } from "@/lib/chart-colors";
 import { formatPercent } from "@/lib/format";
@@ -104,7 +105,6 @@ export function MonthHero({
   summary: MonthlySummary;
   plannedTotal: number;
 }) {
-  const folio = String(month.getUTCMonth() + 1).padStart(2, "0");
   const count = summary.transactionCount;
   const days = elapsedDays(month);
   const used = plannedTotal > 0 ? (summary.spent / plannedTotal) * 100 : null;
@@ -112,27 +112,10 @@ export function MonthHero({
   const overAllocated = summary.remaining < 0;
 
   return (
-    // `dark` keeps the hero in ink on both themes, like the sidebar.
-    <section
-      aria-label={`${formatMonthLabel(month)} overview`}
-      className="dark relative isolate overflow-hidden rounded-3xl border border-sidebar-border bg-sidebar text-foreground shadow-lift animate-[rise_0.4s_cubic-bezier(0.16,1,0.3,1)_both]"
-    >
-      {/* Gradients, not blur filters: they cost nothing to repaint while scrolling. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(42rem_30rem_at_0%_0%,color-mix(in_oklch,var(--primary)_30%,transparent),transparent_70%),radial-gradient(34rem_26rem_at_100%_100%,color-mix(in_oklch,var(--gold)_14%,transparent),transparent_70%)]"
-      />
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-ledger" />
-
+    <HeroFrame month={month}>
       <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-0">
         <div className="min-w-0 lg:pr-10">
-          <p className="flex items-center gap-2.5 text-[10.5px] font-semibold tracking-[0.22em] text-gold-ink uppercase">
-            <span aria-hidden className="gold-rule h-px w-7" />
-            Folio {folio} · Monthly ledger
-          </p>
-          <h1 className="mt-3 text-[2rem] leading-[1.05] font-semibold tracking-[-0.035em] sm:text-[2.5rem]">
-            <AccentTitle title={formatMonthLabel(month)} italic={false} />
-          </h1>
+          <HeroTitle month={month} />
           <p className="mt-2 text-sm text-muted-foreground">
             {count > 0 ? `${count} transaction${count === 1 ? "" : "s"} recorded` : "Nothing recorded yet"}
             {count > 0 && days > 0 && summary.expenses > 0 ? (
@@ -206,6 +189,85 @@ export function MonthHero({
           </figcaption>
         </figure>
       </div>
+    </HeroFrame>
+  );
+}
+
+/** The hero while its data loads: the real month title, placeholders for the figures. */
+export function MonthHeroSkeleton({ month }: { month: Date }) {
+  return (
+    <HeroFrame month={month} busy>
+      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-0">
+        <div className="min-w-0 lg:pr-10">
+          <HeroTitle month={month} />
+          <Skeleton className="mt-3 h-3.5 w-72 max-w-full" />
+          <Skeleton className="mt-9 h-2.5 w-24" />
+          <Skeleton className="mt-3 h-12 w-64 max-w-full" />
+          <Skeleton className="mt-3 h-3.5 w-48" />
+          <Skeleton className="mt-7 h-3 w-full rounded-full" />
+          <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-2.5 w-16" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </div>
+          <Skeleton className="mt-7 h-10 w-44 rounded-lg" />
+        </div>
+        <div className="flex items-center gap-5 border-t border-sidebar-border pt-6 lg:flex-col lg:justify-center lg:gap-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+          <Skeleton className="size-[132px] rounded-full sm:size-[172px]" />
+          <div className="space-y-2 lg:flex lg:flex-col lg:items-center">
+            <Skeleton className="h-2.5 w-24" />
+            <Skeleton className="h-3.5 w-36" />
+          </div>
+        </div>
+      </div>
+    </HeroFrame>
+  );
+}
+
+/** The ink panel and its lighting, shared by the hero and its skeleton. */
+function HeroFrame({
+  month,
+  busy = false,
+  children,
+}: {
+  month: Date;
+  busy?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    // `dark` keeps the hero in ink on both themes, like the sidebar.
+    <section
+      aria-label={`${formatMonthLabel(month)} overview`}
+      aria-busy={busy || undefined}
+      className="dark relative isolate overflow-hidden rounded-3xl border border-sidebar-border bg-sidebar text-foreground shadow-lift"
+    >
+      {/* Gradients, not blur filters: they cost nothing to repaint while scrolling. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(42rem_30rem_at_0%_0%,color-mix(in_oklch,var(--primary)_30%,transparent),transparent_70%),radial-gradient(34rem_26rem_at_100%_100%,color-mix(in_oklch,var(--gold)_14%,transparent),transparent_70%)]"
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-ledger" />
+      {children}
     </section>
+  );
+}
+
+/** The folio line and month title — known before any data arrives. */
+function HeroTitle({ month }: { month: Date }) {
+  const folio = String(month.getUTCMonth() + 1).padStart(2, "0");
+
+  return (
+    <>
+      <p className="flex items-center gap-2.5 text-[10.5px] font-semibold tracking-[0.22em] text-gold-ink uppercase">
+        <span aria-hidden className="gold-rule h-px w-7" />
+        Folio {folio} · Monthly ledger
+      </p>
+      <h1 className="mt-3 text-[2rem] leading-[1.05] font-semibold tracking-[-0.035em] sm:text-[2.5rem]">
+        <AccentTitle title={formatMonthLabel(month)} italic={false} />
+      </h1>
+    </>
   );
 }

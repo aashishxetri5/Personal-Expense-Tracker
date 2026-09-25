@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, PiggyBank, Receipt, Sparkles, Target } from "lucide-react";
 
 import { SpendingDonut } from "@/components/charts/spending-donut";
 import { TrendLineChart } from "@/components/charts/trend-charts";
 import { BudgetLineList } from "@/components/budget/budget-lines";
-import { MonthHero } from "@/components/dashboard/month-hero";
+import { MonthHero, MonthHeroSkeleton } from "@/components/dashboard/month-hero";
 import { FundProgressList } from "@/components/funds/fund-progress";
 import { GoalProgressCard } from "@/components/savings/goal-progress";
 import { Money } from "@/components/money";
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
+import { CardSkeleton } from "@/components/ui/skeletons";
 import { SLOT } from "@/lib/chart-colors";
 import { getMonthlyHistory } from "@/lib/db/queries/history";
 import { getMonthSnapshot } from "@/lib/db/queries/month";
@@ -30,6 +32,19 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const month = parseMonthKey(params.m);
+
+  return (
+    <div className="space-y-6">
+      {/* The banner frame and month title render at once; the figures stream in. */}
+      <Suspense key={params.m ?? "current"} fallback={<DashboardSkeleton month={month} />}>
+        <DashboardContent month={month} />
+      </Suspense>
+    </div>
+  );
+}
+
+/** Everything on the dashboard that needs the month's data. */
+async function DashboardContent({ month }: { month: Date }) {
   const monthKey = toMonthKey(month);
   const user = await getCurrentUser();
 
@@ -59,7 +74,7 @@ export default async function DashboardPage({
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <>
       <MonthHero month={month} summary={summary} plannedTotal={budget.totals.planned} />
 
 
@@ -291,6 +306,24 @@ export default async function DashboardPage({
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
+  );
+}
+
+/** The dashboard's shape while its data loads: the real banner title, placeholder figures. */
+function DashboardSkeleton({ month }: { month: Date }) {
+  return (
+    <>
+      <MonthHeroSkeleton month={month} />
+      <div className="grid gap-4 lg:grid-cols-5">
+        <CardSkeleton variant="chart" chartHeight={208} className="lg:col-span-3" />
+        <CardSkeleton variant="bars" rows={5} className="lg:col-span-2" />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <CardSkeleton variant="bars" rows={2} />
+        <CardSkeleton variant="bars" rows={2} />
+        <CardSkeleton variant="bars" rows={3} />
+      </div>
+    </>
   );
 }

@@ -29,7 +29,6 @@ export default async function BudgetPage({
 }) {
   const params = await searchParams;
   const month = parseMonthKey(params.m);
-  const monthKey = toMonthKey(month);
 
   return (
     <div className="space-y-5">
@@ -82,105 +81,105 @@ async function BudgetContent({ params }: { params: { m?: string } }) {
 
   return (
     <>
-    {/* Status strip ---------------------------------------------------- */}
-    <Card>
-      <CardContent className="pt-5">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-              Spent against plan
-            </p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight">
-              <Money value={budget.totals.actual} />
-              <span className="text-base font-normal text-muted-foreground">
-                {" / "}
-                <Money value={budget.totals.planned} />
-              </span>
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {budget.totals.overCount > 0 ? (
-              <Badge variant="destructive">
-                {budget.totals.overCount} categor{budget.totals.overCount === 1 ? "y" : "ies"} over
-              </Badge>
-            ) : budget.exists ? (
-              <Badge variant="success">On track</Badge>
-            ) : null}
-            <Badge variant="outline">
-              {summary.transactionCount} transaction{summary.transactionCount === 1 ? "" : "s"}
-            </Badge>
-          </div>
-        </div>
-
-        <Progress
-          value={budget.totals.progress}
-          tone={
-            budget.totals.rawProgress > 100
-              ? "danger"
-              : budget.totals.rawProgress > 85
-                ? "warning"
-                : "default"
-          }
-          className="mt-4"
-        />
-      </CardContent>
-    </Card>
-
-    <Tabs defaultValue="plan">
-      <TabsList>
-        <TabsTrigger value="plan">Plan</TabsTrigger>
-        <TabsTrigger value="tracking">Tracking</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="plan">
-        <BudgetEditor
-          monthKey={monthKey}
-          incomeTarget={budget.incomeTarget}
-          note={budget.note}
-          categories={categories.filter((category) => category.kind !== "INCOME")}
-          lines={budget.lines}
-          hasBudget={budget.exists}
-          defaultMonthlyIncome={user.defaultMonthlyIncome}
-        />
-      </TabsContent>
-
-      <TabsContent value="tracking" className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Planned against actual</CardTitle>
-            <CardDescription>
-              Bars in red are over their planned amount for {formatMonthLabel(month)}.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {chartData.length > 0 ? (
-              <BudgetVsActualChart
-                data={chartData}
-                height={Math.max(220, chartData.length * 34 + 40)}
-              />
-            ) : (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                Nothing planned or spent in {formatMonthLabel(month)} yet.
+      {/* Status strip ---------------------------------------------------- */}
+      <Card>
+        <CardContent className="pt-5">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                Spent against plan
               </p>
-            )}
-          </CardContent>
-        </Card>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">
+                <Money value={budget.totals.actual} />
+                <span className="text-base font-normal text-muted-foreground">
+                  {" / "}
+                  <Money value={budget.totals.planned} />
+                </span>
+              </p>
+            </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Category detail</CardTitle>
-            <CardDescription>
-              Money paid out of a future fund or savings goal is not charged here — it was already
-              counted when you set it aside.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <BudgetLineList lines={budget.lines} />
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+            <div className="flex flex-wrap items-center gap-2">
+              {budget.totals.overCount > 0 ? (
+                <Badge variant="destructive">
+                  {budget.totals.overCount} categor{budget.totals.overCount === 1 ? "y" : "ies"} over
+                </Badge>
+              ) : budget.exists ? (
+                <Badge variant="success">On track</Badge>
+              ) : null}
+              <Badge variant="outline">
+                {summary.transactionCount} transaction{summary.transactionCount === 1 ? "" : "s"}
+              </Badge>
+            </div>
+          </div>
+
+          <Progress
+            value={budget.totals.progress}
+            tone={
+              budget.totals.rawProgress > 100
+                ? "danger"
+                : budget.totals.rawProgress > 85
+                  ? "warning"
+                  : "default"
+            }
+            className="mt-4"
+          />
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="plan">
+        <TabsList>
+          <TabsTrigger value="plan">Plan</TabsTrigger>
+          <TabsTrigger value="tracking">Tracking</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="plan">
+          <BudgetEditor
+            monthKey={monthKey}
+            incomeTarget={budget.incomeTarget}
+            note={budget.note}
+            categories={categories.filter((category) => category.kind !== "INCOME")}
+            lines={budget.lines}
+            hasBudget={budget.exists}
+            defaultMonthlyIncome={user.defaultMonthlyIncome}
+          />
+        </TabsContent>
+
+        <TabsContent value="tracking" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Planned against actual</CardTitle>
+              <CardDescription>
+                Bars in red are over their planned amount for {formatMonthLabel(month)}.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {chartData.length > 0 ? (
+                <BudgetVsActualChart
+                  data={chartData}
+                  height={Math.max(220, chartData.length * 34 + 40)}
+                />
+              ) : (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Nothing planned or spent in {formatMonthLabel(month)} yet.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Category detail</CardTitle>
+              <CardDescription>
+                Money paid out of a future fund or savings goal is not charged here — it was already
+                counted when you set it aside.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BudgetLineList lines={budget.lines} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

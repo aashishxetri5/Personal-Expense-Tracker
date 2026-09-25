@@ -43,6 +43,12 @@ export default async function TransactionsPage({
     ? parsed.data
     : transactionFilterSchema.parse({ month: showAllMonths ? undefined : monthKey });
 
+  const exportParams = new URLSearchParams();
+  if (!showAllMonths) exportParams.set("month", monthKey);
+  if (filter.search) exportParams.set("search", filter.search);
+  if (filter.type) exportParams.set("type", filter.type);
+  if (filter.categoryId) exportParams.set("categoryId", filter.categoryId);
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -92,49 +98,44 @@ async function TransactionsContent({ params }: { params: SearchParams }) {
     getCategories(user.id),
   ]);
 
-  const exportParams = new URLSearchParams();
-  if (!showAllMonths) exportParams.set("month", monthKey);
-  if (filter.search) exportParams.set("search", filter.search);
-  if (filter.type) exportParams.set("type", filter.type);
-  if (filter.categoryId) exportParams.set("categoryId", filter.categoryId);
 
   return (
     <>
-    <TransactionFilters categories={categories} />
+      <TransactionFilters categories={categories} />
 
-    <div className="grid gap-3 sm:grid-cols-3">
-      <StatTile label="Transactions" text={String(page.total)} />
-      <StatTile label="Money in" value={page.totals.income} tone="positive" />
-      <StatTile label="Money out" value={page.totals.outflow} />
-    </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatTile label="Transactions" text={String(page.total)} />
+        <StatTile label="Money in" value={page.totals.income} tone="positive" />
+        <StatTile label="Money out" value={page.totals.outflow} />
+      </div>
 
-    <Card>
-      <CardContent className="pt-5">
-        <TransactionList
-          transactions={page.rows}
-          emptyTitle={
-            filter.search || filter.type || filter.categoryId
-              ? "No transactions match those filters"
-              : `No transactions in ${formatMonthLabel(month)}`
-          }
-          emptyDescription={
-            filter.search || filter.type || filter.categoryId
-              ? "Try widening the filters, or switch to all months."
-              : "Start tracking this month by adding your first entry."
-          }
-        />
-      </CardContent>
-      {page.total > 0 ? (
-        <CardFooter className="justify-between">
-          <Pagination
-            page={page.page}
-            pageCount={page.pageCount}
-            total={page.total}
-            pageSize={page.pageSize}
+      <Card>
+        <CardContent className="pt-5">
+          <TransactionList
+            transactions={page.rows}
+            emptyTitle={
+              filter.search || filter.type || filter.categoryId
+                ? "No transactions match those filters"
+                : `No transactions in ${formatMonthLabel(month)}`
+            }
+            emptyDescription={
+              filter.search || filter.type || filter.categoryId
+                ? "Try widening the filters, or switch to all months."
+                : "Start tracking this month by adding your first entry."
+            }
           />
-        </CardFooter>
-      ) : null}
-    </Card>
+        </CardContent>
+        {page.total > 0 ? (
+          <CardFooter className="justify-between">
+            <Pagination
+              page={page.page}
+              pageCount={page.pageCount}
+              total={page.total}
+              pageSize={page.pageSize}
+            />
+          </CardFooter>
+        ) : null}
+      </Card>
     </>
   );
 }

@@ -35,18 +35,18 @@ async function SettingsContent() {
 
   return (
     <>
-    <ProfileForm
-      name={user.name}
-      currency={user.currency}
-      locale={user.locale}
-      defaultMonthlyIncome={user.defaultMonthlyIncome}
-    />
+      <ProfileForm
+        name={user.name}
+        currency={user.currency}
+        locale={user.locale}
+        defaultMonthlyIncome={user.defaultMonthlyIncome}
+      />
 
-    <CategoryManager categories={categories} />
+      <CategoryManager categories={categories} />
 
-    <AccountManager accounts={accounts} />
+      <AccountManager accounts={accounts} />
 
-    <DataSection demoDataLoaded={user.demoDataLoaded} />
+      <DataSection demoDataLoaded={user.demoDataLoaded} />
     </>
   );
 }

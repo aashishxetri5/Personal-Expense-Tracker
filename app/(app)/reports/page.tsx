@@ -60,7 +60,8 @@ export default async function ReportsPage({
   const period: ReportPeriod =
     params.period === "quarter" || params.period === "year" ? params.period : "month";
 
-  const { from, to, label } = periodRange(period, month);
+  const { label } = periodRange(period, month);
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -102,129 +103,129 @@ async function ReportsContent({ params }: { params: { m?: string; period?: strin
 
   return (
     <>
-    {!hasData ? (
-      <EmptyState
-        title={`Nothing recorded for ${label}`}
-        description="Switch to a period with transactions, or start recording this one."
-      />
-    ) : (
-      <>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatTile label="Income" value={summary.income} />
-          <StatTile label="Spent" value={summary.spent} />
-          <StatTile label="Invested" value={summary.investments} />
-          <StatTile
-            label="Savings rate"
-            text={formatPercent(summary.savingsRate, 0)}
-            badge={
-              summary.savingsRate >= 20 ? <Badge variant="success">Healthy</Badge> : undefined
-            }
-          />
-        </div>
+      {!hasData ? (
+        <EmptyState
+          title={`Nothing recorded for ${label}`}
+          description="Switch to a period with transactions, or start recording this one."
+        />
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatTile label="Income" value={summary.income} />
+            <StatTile label="Spent" value={summary.spent} />
+            <StatTile label="Invested" value={summary.investments} />
+            <StatTile
+              label="Savings rate"
+              text={formatPercent(summary.savingsRate, 0)}
+              badge={
+                summary.savingsRate >= 20 ? <Badge variant="success">Healthy</Badge> : undefined
+              }
+            />
+          </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Spending by category</CardTitle>
-              <CardDescription>Across the whole of {label}.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SpendingDonut
-                total={summary.spent}
-                data={report.categories.map((row) => ({
-                  id: row.categoryId,
-                  label: row.name,
-                  value: row.amount,
-                  color: row.color,
-                }))}
-              />
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Spending by category</CardTitle>
+                <CardDescription>Across the whole of {label}.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SpendingDonut
+                  total={summary.spent}
+                  data={report.categories.map((row) => ({
+                    id: row.categoryId,
+                    label: row.name,
+                    value: row.amount,
+                    color: row.color,
+                  }))}
+                />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Month by month</CardTitle>
-              <CardDescription>How each month in the period compares.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <GroupedBarChart
-                data={chartData}
-                caption={`Income, spending and investments across ${label}`}
-                series={[
-                  { key: "income", name: "Income", color: SLOT.green },
-                  { key: "spent", name: "Spent", color: SLOT.orange },
-                  { key: "invested", name: "Invested", color: SLOT.violet },
-                ]}
-              />
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Month by month</CardTitle>
+                <CardDescription>How each month in the period compares.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <GroupedBarChart
+                  data={chartData}
+                  caption={`Income, spending and investments across ${label}`}
+                  series={[
+                    { key: "income", name: "Income", color: SLOT.green },
+                    { key: "spent", name: "Spent", color: SLOT.orange },
+                    { key: "invested", name: "Invested", color: SLOT.violet },
+                  ]}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
-        <div className="grid gap-4 lg:grid-cols-5">
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Category detail</CardTitle>
-              <CardDescription>
-                Everyday spending plus what was set aside into funds and goals.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Share</TableHead>
-                    <TableHead className="text-right">Per month</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {report.categories.map((row) => (
-                    <TableRow key={row.categoryId}>
-                      <TableCell className="font-medium">{row.name}</TableCell>
-                      <TableCell className="text-right">
-                        <Money value={row.amount} />
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground tabular">
-                        {formatPercent(row.share, 1)}
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        <Money value={row.amount / report.monthCount} />
-                      </TableCell>
+          <div className="grid gap-4 lg:grid-cols-5">
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Category detail</CardTitle>
+                <CardDescription>
+                  Everyday spending plus what was set aside into funds and goals.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Category</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Share</TableHead>
+                      <TableHead className="text-right">Per month</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {report.categories.map((row) => (
+                      <TableRow key={row.categoryId}>
+                        <TableCell className="font-medium">{row.name}</TableCell>
+                        <TableCell className="text-right">
+                          <Money value={row.amount} />
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground tabular">
+                          {formatPercent(row.share, 1)}
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          <Money value={row.amount / report.monthCount} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
 
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Period summary</CardTitle>
-              <CardDescription>
-                {report.monthCount} month{report.monthCount === 1 ? "" : "s"} of activity.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <dl className="divide-y divide-border text-sm">
-                <Row label="Total income" value={summary.income} />
-                <Row label="Everyday spending" value={summary.expenses} />
-                <Row label="Into future funds" value={summary.fundContributions} />
-                <Row label="Paid from reserves" value={summary.fundExpenses + summary.goalWithdrawals} />
-                <Row label="Invested" value={summary.investments} />
-                <Row label="Saved into goals" value={summary.saved} />
-                <Row label="Left unassigned" value={summary.remaining} tone />
-                <Row label="Planned budget" value={report.plannedTotal} />
-                <Row label="Average monthly spend" value={report.averageMonthlySpend} />
-                {report.netWorth.change !== null ? (
-                  <Row label="Net worth change" value={report.netWorth.change} tone />
-                ) : null}
-              </dl>
-            </CardContent>
-          </Card>
-        </div>
-      </>
-    )}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Period summary</CardTitle>
+                <CardDescription>
+                  {report.monthCount} month{report.monthCount === 1 ? "" : "s"} of activity.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <dl className="divide-y divide-border text-sm">
+                  <Row label="Total income" value={summary.income} />
+                  <Row label="Everyday spending" value={summary.expenses} />
+                  <Row label="Into future funds" value={summary.fundContributions} />
+                  <Row label="Paid from reserves" value={summary.fundExpenses + summary.goalWithdrawals} />
+                  <Row label="Invested" value={summary.investments} />
+                  <Row label="Saved into goals" value={summary.saved} />
+                  <Row label="Left unassigned" value={summary.remaining} tone />
+                  <Row label="Planned budget" value={report.plannedTotal} />
+                  <Row label="Average monthly spend" value={report.averageMonthlySpend} />
+                  {report.netWorth.change !== null ? (
+                    <Row label="Net worth change" value={report.netWorth.change} tone />
+                  ) : null}
+                </dl>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </>
   );
 }

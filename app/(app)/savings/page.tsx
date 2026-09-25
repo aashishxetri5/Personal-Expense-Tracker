@@ -23,7 +23,7 @@ export default async function SavingsPage({
   searchParams: Promise<{ m?: string }>;
 }) {
   const params = await searchParams;
-  const month = parseMonthKey(params.m);
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -67,46 +67,46 @@ async function SavingsContent({ params }: { params: { m?: string } }) {
 
   return (
     <>
-    <div className="grid gap-3 sm:grid-cols-3">
-      <StatTile label="Total saved" value={totalSaved} />
-      <StatTile label="Combined target" value={totalTarget} />
-      <StatTile label={`Added in ${formatMonthLabel(month)}`} value={savedThisMonth} />
-    </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatTile label="Total saved" value={totalSaved} />
+        <StatTile label="Combined target" value={totalTarget} />
+        <StatTile label={`Added in ${formatMonthLabel(month)}`} value={savedThisMonth} />
+      </div>
 
-    {emergency.length > 0 ? (
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Emergency fund</h2>
-        <GoalGrid goals={emergency} />
-      </section>
-    ) : null}
-
-    <section className="space-y-3">
-      {emergency.length > 0 && general.length > 0 ? (
-        <h2 className="text-sm font-semibold text-muted-foreground">Other goals</h2>
+      {emergency.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Emergency fund</h2>
+          <GoalGrid goals={emergency} />
+        </section>
       ) : null}
-      <GoalGrid goals={general} />
-    </section>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Savings activity in {formatMonthLabel(month)}</CardTitle>
-        <CardDescription>Contributions in, and anything spent out of a goal.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TransactionList
-          transactions={goalActivity}
-          emptyTitle={`No savings movements in ${formatMonthLabel(month)}`}
-          emptyDescription="Add a transfer into a goal to start building it up."
-        />
-      </CardContent>
-    </Card>
-
-    {archived.length > 0 ? (
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Archived goals</h2>
-        <GoalGrid goals={archived} />
+        {emergency.length > 0 && general.length > 0 ? (
+          <h2 className="text-sm font-semibold text-muted-foreground">Other goals</h2>
+        ) : null}
+        <GoalGrid goals={general} />
       </section>
-    ) : null}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Savings activity in {formatMonthLabel(month)}</CardTitle>
+          <CardDescription>Contributions in, and anything spent out of a goal.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TransactionList
+            transactions={goalActivity}
+            emptyTitle={`No savings movements in ${formatMonthLabel(month)}`}
+            emptyDescription="Add a transfer into a goal to start building it up."
+          />
+        </CardContent>
+      </Card>
+
+      {archived.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Archived goals</h2>
+          <GoalGrid goals={archived} />
+        </section>
+      ) : null}
     </>
   );
 }
