@@ -4,7 +4,8 @@ import { ArrowRight, PiggyBank, Receipt, Sparkles, Target } from "lucide-react";
 import { SpendingDonut } from "@/components/charts/spending-donut";
 import { TrendLineChart } from "@/components/charts/trend-charts";
 import { BudgetLineList } from "@/components/budget/budget-lines";
-import { SummaryCards, SummaryExplainer } from "@/components/dashboard/summary-cards";
+import { MonthHero } from "@/components/dashboard/month-hero";
+import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { FundProgressList } from "@/components/funds/fund-progress";
 import { GoalProgressCard } from "@/components/savings/goal-progress";
 import { Money } from "@/components/money";
@@ -13,7 +14,6 @@ import { AddTransactionButton } from "@/components/transactions/transaction-dial
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { PageHeader } from "@/components/ui/page-header";
 import { Progress } from "@/components/ui/progress";
 import { SLOT } from "@/lib/chart-colors";
 import { getMonthlyHistory } from "@/lib/db/queries/history";
@@ -55,20 +55,7 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={formatMonthLabel(month)}
-        description={
-          hasActivity
-            ? `${summary.transactionCount} transaction${summary.transactionCount === 1 ? "" : "s"} recorded`
-            : "Nothing recorded for this month yet"
-        }
-        action={
-          <div className="flex items-center gap-3">
-            <SummaryExplainer summary={summary} />
-            <AddTransactionButton size="sm" className="sm:hidden" label="Add" />
-          </div>
-        }
-      />
+      <MonthHero month={month} summary={summary} plannedTotal={budget.totals.planned} />
 
       <SummaryCards summary={summary} plannedTotal={budget.totals.planned} />
 

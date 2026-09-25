@@ -11,6 +11,7 @@ const badgeVariants = cva(
         default: "border-transparent bg-secondary text-secondary-foreground",
         outline: "border-border text-muted-foreground",
         primary: "border-transparent bg-primary/10 text-primary",
+        gold: "border-transparent bg-gold/15 text-gold-ink",
         success: "border-transparent bg-[var(--success)]/12 text-[var(--success)]",
         warning:
           "border-transparent bg-[var(--warning)]/15 text-[color-mix(in_oklch,var(--warning)_75%,black)] dark:text-[var(--warning)]",

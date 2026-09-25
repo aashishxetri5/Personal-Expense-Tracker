@@ -25,9 +25,10 @@ export function useChartTheme() {
       /** Re-step a stored entity colour for the current surface. */
       series: (hex: string) => resolveSeriesColor(hex, isDark),
       other: isDark ? OTHER_COLOR.dark : OTHER_COLOR.light,
-      grid: isDark ? "rgba(255,255,255,0.08)" : "rgba(15,23,42,0.07)",
+      grid: isDark ? "rgba(255,255,255,0.07)" : "rgba(60,48,20,0.08)",
       axis: isDark ? "rgba(255,255,255,0.45)" : "rgba(15,23,42,0.45)",
-      surface: isDark ? "#131722" : "#ffffff",
+      // Matches --card, so arcs and dots are cut cleanly out of the surface.
+      surface: isDark ? "#131623" : "#fffefb",
       cursor: isDark ? "rgba(255,255,255,0.12)" : "rgba(15,23,42,0.06)",
     }),
     [isDark],

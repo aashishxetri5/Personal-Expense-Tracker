@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, KeyRound, LockOpen, ShieldCheck } from "lucide-react";
 
 import styles from "@/components/auth/lock-screen.module.css";
-import { VaultDial } from "@/components/auth/vault-dial";
+import { VaultDial } from "@/components/brand/vault-dial";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";

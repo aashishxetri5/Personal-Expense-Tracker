@@ -30,11 +30,17 @@ export function StatTile({
   className,
 }: StatTileProps) {
   return (
-    <div className={cn("rounded-xl border border-border bg-card px-4 py-3 shadow-xs", className)}>
-      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-border/80 bg-card px-4 py-3.5 shadow-card",
+        className,
+      )}
+    >
+      <p className="flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+        <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-gold" />
         {label}
       </p>
-      <p className="mt-1 flex items-center gap-2 text-lg font-semibold tracking-tight">
+      <p className="mt-1.5 flex items-center gap-2 text-xl font-semibold tracking-tight">
         {value !== undefined ? <Money value={value} tone={tone} /> : <span className="tabular">{text}</span>}
         {badge}
       </p>

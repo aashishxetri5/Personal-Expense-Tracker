@@ -243,7 +243,7 @@ export function BudgetEditor({
       ))}
 
       {/* Sticky save bar — the totals stay visible while you edit. */}
-      <div className="sticky bottom-20 z-20 rounded-xl border border-border bg-card/95 p-4 shadow-lg backdrop-blur lg:bottom-4">
+      <div className="sticky bottom-24 z-20 rounded-2xl border border-border/80 bg-card/90 p-4 shadow-lift backdrop-blur-xl lg:bottom-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <dl className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
             <div>

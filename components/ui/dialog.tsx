@@ -14,7 +14,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        "fixed inset-0 z-50 bg-foreground/25 backdrop-blur-[2px] transition-opacity",
+        "fixed inset-0 z-50 bg-[oklch(0.16_0.03_272/0.45)] backdrop-blur-[3px] transition-opacity",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
         className,
@@ -43,7 +43,8 @@ function DialogContent({
       <DialogPrimitive.Content
         className={cn(
           "fixed z-50 flex flex-col border border-border bg-card shadow-2xl outline-none",
-          "inset-x-0 bottom-0 max-h-[92dvh] rounded-t-2xl",
+          "before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-gold/70 before:to-transparent",
+          "inset-x-0 bottom-0 max-h-[92dvh] rounded-t-3xl",
           "sm:inset-x-auto sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:max-h-[88dvh] sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl",
           "data-[state=open]:animate-[rise_0.22s_cubic-bezier(0.16,1,0.3,1)]",
           className,
@@ -90,7 +91,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
 function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
-      className={cn("text-base font-semibold tracking-tight", className)}
+      className={cn("font-display text-[1.6rem] leading-tight font-normal", className)}
       {...props}
     />
   );

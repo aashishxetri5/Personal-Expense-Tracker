@@ -57,13 +57,13 @@ export function FundCard({
   return (
     <article
       className={cn(
-        "flex flex-col rounded-xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-sm",
+        "flex flex-col rounded-2xl border border-border/80 bg-card p-5 shadow-card transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift",
         className,
       )}
     >
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <h3 className="flex items-center gap-2 font-display text-[1.25rem] leading-tight">
             <ColorDot color={theme.series(fund.color)} />
             <span className="truncate">{fund.name}</span>
           </h3>

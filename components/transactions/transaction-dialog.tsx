@@ -107,12 +107,12 @@ export function TransactionDialogProvider({
 export function AddTransactionButton({
   className,
   size = "default",
-  variant = "default",
+  variant = "gold",
   label = "Add transaction",
 }: {
   className?: string;
   size?: "default" | "sm" | "lg";
-  variant?: "default" | "outline" | "secondary";
+  variant?: "gold" | "default" | "outline" | "secondary";
   label?: string;
 }) {
   const { add } = useTransactionDialog();
@@ -125,7 +125,7 @@ export function AddTransactionButton({
   );
 }
 
-/** Thumb-reachable floating button, phones only. */
+/** Thumb-reachable floating button, phones only — a brass coin above the dock. */
 export function AddTransactionFab({ className }: { className?: string }) {
   const { add } = useTransactionDialog();
 
@@ -135,12 +135,13 @@ export function AddTransactionFab({ className }: { className?: string }) {
       onClick={add}
       aria-label="Add transaction"
       className={cn(
-        "fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-40 flex size-13 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95 lg:hidden",
+        "fixed right-4 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-40 flex size-14 items-center justify-center rounded-full bg-gold sheen text-gold-foreground ring-4 ring-gold/20 shadow-[inset_0_1px_0_oklch(1_0_0/0.5),0_14px_28px_-8px_oklch(0.45_0.12_70/0.6)] transition-transform active:scale-95 lg:hidden",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none",
         className,
       )}
     >
-      <Plus className="size-6" />
+      <span aria-hidden className="absolute inset-1 rounded-full border border-dashed border-gold-deep/40" />
+      <Plus className="relative size-6" />
     </button>
   );
 }

@@ -10,6 +10,19 @@ import {
 import { getFormOptions } from "@/lib/db/queries/reference";
 import { getCurrentUser } from "@/lib/db/user";
 
+/** Ruled ledger paper behind every page, lit faintly in indigo and brass. */
+function PaperBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="absolute inset-0 bg-ledger [mask-image:linear-gradient(to_bottom,black,transparent_90%)]" />
+      <div className="absolute -top-48 -right-40 size-[38rem] rounded-full bg-primary/10 blur-3xl dark:bg-primary/15" />
+      <div className="absolute top-[35%] -right-56 size-[30rem] rounded-full bg-gold/10 blur-3xl dark:bg-gold/[0.06]" />
+      {/* The double margin rule of an accounting book, along the sidebar's edge. */}
+      <div className="absolute inset-y-0 left-64 ml-1.5 hidden w-[5px] border-x border-[var(--margin-rule)] lg:block" />
+    </div>
+  );
+}
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   const options = await getFormOptions(user.id);
@@ -19,11 +32,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     // month) on the client.
     <Suspense fallback={null}>
       <TransactionDialogProvider options={options}>
-        <div className="min-h-dvh lg:pl-60">
+        <div className="relative isolate min-h-dvh lg:pl-64">
+          <PaperBackdrop />
           <Sidebar name={user.name} />
           <Topbar name={user.name} />
 
-          <main className="mx-auto w-full max-w-6xl px-4 pt-5 pb-28 sm:px-6 lg:pb-12">{children}</main>
+          <main className="mx-auto w-full max-w-6xl px-4 pt-6 pb-36 sm:px-6 lg:pt-8 lg:pb-14">{children}</main>
 
           <MobileNav />
           <AddTransactionFab />

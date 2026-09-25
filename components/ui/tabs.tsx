@@ -17,7 +17,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
   return (
     <TabsPrimitive.List
       className={cn(
-        "inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground",
+        "inline-flex h-9 items-center gap-1 rounded-xl bg-muted/80 p-1 text-muted-foreground ring-1 ring-border/60",
         className,
       )}
       {...props}
@@ -37,7 +37,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1 text-[13px] font-medium whitespace-nowrap transition-all outline-none",
         "focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-        "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs",
+        "rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-card",
         className,
       )}
       {...props}

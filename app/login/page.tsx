@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Instrument_Serif } from "next/font/google";
 import { AlertTriangle, Wallet } from "lucide-react";
 
 import styles from "@/components/auth/lock-screen.module.css";
 import { LoginForm } from "@/components/auth/login-form";
-import { VaultDial } from "@/components/auth/vault-dial";
+import { VaultDial } from "@/components/brand/vault-dial";
 import { VaultScene } from "@/components/auth/vault-scene";
 import { NAV_ITEMS } from "@/components/layout/nav-config";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -13,14 +12,6 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Sign in" };
 export const dynamic = "force-dynamic";
-
-const display = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-display",
-  display: "swap",
-});
 
 /** What sits behind the lock, as a row of chips beside the headline. */
 const FEATURES = NAV_ITEMS.filter((item) => item.href !== "/" && item.href !== "/settings");
@@ -70,7 +61,7 @@ export default async function LoginPage({
   const configured = isAuthConfigured();
 
   return (
-    <main className={cn(styles.screen, display.variable, "relative flex min-h-dvh flex-col overflow-hidden")}>
+    <main className={cn(styles.screen, "relative flex min-h-dvh flex-col overflow-hidden")}>
       <VaultScene />
 
       <header className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6">

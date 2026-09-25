@@ -24,9 +24,12 @@ type Metric = {
   value: number;
   icon: typeof Wallet;
   caption: React.ReactNode;
+  /** Classes for the coin the icon sits in. */
   accent: string;
   tone?: "positive" | "negative" | "none";
 };
+
+const COIN = "bg-linear-to-br from-gold-bright/40 to-gold/20 text-gold-ink ring-gold/35";
 
 /**
  * The five headline figures. Every rupee of income lands in exactly one of
@@ -53,7 +56,7 @@ export function SummaryCards({
       value: summary.income,
       icon: ArrowDownRight,
       caption: "Received this month",
-      accent: "text-[var(--success)]",
+      accent: "bg-success/12 text-[var(--success)] ring-success/30",
     },
     {
       key: "spent",
@@ -68,7 +71,7 @@ export function SummaryCards({
         ) : (
           "No budget set"
         ),
-      accent: "text-foreground",
+      accent: COIN,
     },
     {
       key: "saved",
@@ -76,7 +79,7 @@ export function SummaryCards({
       value: summary.saved,
       icon: PiggyBank,
       caption: "Into savings goals",
-      accent: "text-foreground",
+      accent: COIN,
     },
     {
       key: "invested",
@@ -84,7 +87,7 @@ export function SummaryCards({
       value: summary.investments,
       icon: TrendingUp,
       caption: "Not counted as spending",
-      accent: "text-foreground",
+      accent: COIN,
     },
     {
       key: "remaining",
@@ -92,7 +95,7 @@ export function SummaryCards({
       value: summary.remaining,
       icon: Wallet,
       caption: summary.remaining < 0 ? "Over-allocated" : "Yet to be assigned",
-      accent: "text-foreground",
+      accent: COIN,
       tone: summary.remaining < 0 ? "negative" : "none",
     },
   ];
@@ -105,17 +108,22 @@ export function SummaryCards({
       {metrics.map((metric, index) => (
         <Card
           key={metric.key}
-          className="animate-[rise_0.24s_cubic-bezier(0.16,1,0.3,1)_both] p-4"
-          style={{ animationDelay: `${index * 35}ms` }}
+          className="animate-[rise_0.3s_cubic-bezier(0.16,1,0.3,1)_both] p-4 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+          style={{ animationDelay: `${80 + index * 45}ms` }}
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+            <p className="text-[10.5px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
               {metric.label}
             </p>
-            <metric.icon className={cn("size-3.5 shrink-0", metric.accent)} aria-hidden />
+            <span
+              aria-hidden
+              className={cn("flex size-7 shrink-0 items-center justify-center rounded-full ring-1", metric.accent)}
+            >
+              <metric.icon className="size-3.5" />
+            </span>
           </div>
 
-          <p className="mt-2 text-xl font-semibold tracking-tight sm:text-[22px]">
+          <p className="mt-2.5 text-xl font-semibold tracking-tight sm:text-[22px]">
             <Money value={metric.value} tone={metric.tone === "negative" ? "negative" : "none"} />
           </p>
 
