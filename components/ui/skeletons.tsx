@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * without the layout jumping.
  */
 
-const SURFACE = "rounded-2xl border border-border/80 bg-card shadow-card";
+const SURFACE = "rounded-xl border border-border bg-card";
 
 /** A row of stat tiles. */
 export function StatsSkeleton({ count = 3, className }: { count?: number; className?: string }) {
@@ -62,7 +62,7 @@ export function CardSkeleton({
 export function TableSkeleton({ rows = 8, className }: { rows?: number; className?: string }) {
   return (
     <div className={cn(SURFACE, "p-5", className)}>
-      <div className="flex gap-6 border-b-[3px] border-double border-border pb-3">
+      <div className="flex gap-6 border-b border-border pb-3">
         {[16, 40, 24, 16].map((width, index) => (
           <Skeleton key={index} className="h-2.5" style={{ width: `${width}%` }} />
         ))}

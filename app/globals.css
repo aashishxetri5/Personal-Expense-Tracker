@@ -5,76 +5,51 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Design tokens — "the vault ledger"
-   Light is ruled ledger paper, dark is deep indigo ink; brass is the one accent
-   the two share. One neutral ramp, one brand colour (indigo), brass for
-   ornament, and three semantic colours for money states.
+   Design tokens
+   Quiet on purpose: one neutral ramp, a near-black primary, and colour kept
+   for what carries meaning — money states and chart series.
 --------------------------------------------------------------------------- */
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 
-  --background: oklch(0.982 0.008 86);
-  --foreground: oklch(0.22 0.025 272);
+  --background: oklch(0.992 0 0);
+  --foreground: oklch(0.2 0.006 265);
 
-  --card: oklch(0.996 0.003 86);
-  --card-foreground: oklch(0.22 0.025 272);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.006 265);
 
-  --popover: oklch(0.998 0.002 86);
-  --popover-foreground: oklch(0.22 0.025 272);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.006 265);
 
-  --primary: oklch(0.52 0.19 272);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: oklch(0.22 0.006 265);
+  --primary-foreground: oklch(0.985 0 0);
 
-  --secondary: oklch(0.955 0.01 84);
-  --secondary-foreground: oklch(0.28 0.025 272);
+  --secondary: oklch(0.965 0.002 265);
+  --secondary-foreground: oklch(0.25 0.006 265);
 
-  --muted: oklch(0.958 0.009 84);
-  --muted-foreground: oklch(0.52 0.02 272);
+  --muted: oklch(0.968 0.002 265);
+  --muted-foreground: oklch(0.53 0.008 265);
 
-  --accent: oklch(0.955 0.02 272);
-  --accent-foreground: oklch(0.3 0.05 272);
+  --accent: oklch(0.96 0.002 265);
+  --accent-foreground: oklch(0.22 0.006 265);
 
-  --destructive: oklch(0.58 0.21 26);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.577 0.2 27);
+  --destructive-foreground: oklch(0.985 0 0);
 
-  --success: oklch(0.6 0.15 156);
-  --success-foreground: oklch(0.99 0 0);
+  --success: oklch(0.58 0.13 155);
+  --success-foreground: oklch(0.985 0 0);
 
-  --warning: oklch(0.72 0.16 72);
-  --warning-foreground: oklch(0.24 0.04 72);
+  --warning: oklch(0.72 0.15 70);
+  --warning-foreground: oklch(0.25 0.04 70);
 
-  --border: oklch(0.905 0.013 82);
-  --input: oklch(0.89 0.014 82);
-  --ring: oklch(0.52 0.19 272);
+  --border: oklch(0.925 0.003 265);
+  --input: oklch(0.905 0.004 265);
+  --ring: oklch(0.55 0.01 265);
 
-  --sidebar: oklch(0.14 0.024 272);
-  --sidebar-foreground: oklch(0.86 0.012 86);
-  --sidebar-border: oklch(0.25 0.026 272);
-
-  /* Brass: the dial, the coins, the rules under headings. */
-  --gold: oklch(0.74 0.13 78);
-  --gold-bright: oklch(0.87 0.12 88);
-  --gold-deep: oklch(0.5 0.1 62);
-  --gold-foreground: oklch(0.24 0.05 62);
-  /* Brass as text — darkened on paper so it passes contrast. */
-  --gold-ink: oklch(0.52 0.12 64);
-
-  /* The dial face stays dark in both themes — it is an object, not a surface. */
-  --ink-lift: oklch(0.33 0.035 272);
-  --ink: oklch(0.24 0.03 272);
-  --ink-deep: oklch(0.17 0.028 272);
-
-  /* Ledger paper. */
-  --rule: oklch(0.5 0.08 272 / 0.07);
-  --margin-rule: oklch(0.62 0.17 18 / 0.3);
-
-  --card-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.7), 0 1px 2px oklch(0.3 0.05 272 / 0.05),
-    0 10px 28px -16px oklch(0.3 0.07 272 / 0.16);
-  --lift-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.7), 0 2px 4px oklch(0.3 0.05 272 / 0.06),
-    0 22px 40px -20px oklch(0.3 0.08 272 / 0.26);
+  --sidebar: oklch(0.982 0.001 265);
+  --sidebar-foreground: oklch(0.38 0.006 265);
+  --sidebar-border: oklch(0.925 0.003 265);
 
   /* Validated categorical ramp — see lib/chart-colors.ts */
   --chart-1: #2a78d6;
@@ -86,55 +61,43 @@
 }
 
 .dark {
-  --background: oklch(0.165 0.022 272);
-  --foreground: oklch(0.955 0.008 86);
+  --background: oklch(0.155 0.003 265);
+  --foreground: oklch(0.96 0.002 265);
 
-  --card: oklch(0.205 0.026 272);
-  --card-foreground: oklch(0.955 0.008 86);
+  --card: oklch(0.185 0.004 265);
+  --card-foreground: oklch(0.96 0.002 265);
 
-  --popover: oklch(0.215 0.028 272);
-  --popover-foreground: oklch(0.955 0.008 86);
+  --popover: oklch(0.2 0.004 265);
+  --popover-foreground: oklch(0.96 0.002 265);
 
-  --primary: oklch(0.7 0.16 276);
-  --primary-foreground: oklch(0.17 0.02 276);
+  --primary: oklch(0.96 0.002 265);
+  --primary-foreground: oklch(0.2 0.006 265);
 
-  --secondary: oklch(0.255 0.028 272);
-  --secondary-foreground: oklch(0.93 0.008 86);
+  --secondary: oklch(0.24 0.005 265);
+  --secondary-foreground: oklch(0.94 0.002 265);
 
-  --muted: oklch(0.245 0.026 272);
-  --muted-foreground: oklch(0.7 0.02 272);
+  --muted: oklch(0.23 0.004 265);
+  --muted-foreground: oklch(0.68 0.008 265);
 
-  --accent: oklch(0.28 0.04 276);
-  --accent-foreground: oklch(0.92 0.02 276);
+  --accent: oklch(0.25 0.005 265);
+  --accent-foreground: oklch(0.96 0.002 265);
 
   --destructive: oklch(0.66 0.19 25);
   --destructive-foreground: oklch(0.16 0.02 25);
 
-  --success: oklch(0.7 0.15 158);
+  --success: oklch(0.7 0.14 158);
   --success-foreground: oklch(0.16 0.02 158);
 
-  --warning: oklch(0.78 0.15 74);
+  --warning: oklch(0.78 0.14 74);
   --warning-foreground: oklch(0.19 0.03 74);
 
-  --border: oklch(0.29 0.028 272);
-  --input: oklch(0.31 0.03 272);
-  --ring: oklch(0.7 0.16 276);
+  --border: oklch(0.265 0.005 265);
+  --input: oklch(0.3 0.006 265);
+  --ring: oklch(0.6 0.01 265);
 
-  --sidebar: oklch(0.14 0.024 272);
-  --sidebar-foreground: oklch(0.86 0.012 86);
-  --sidebar-border: oklch(0.25 0.026 272);
-
-  --gold-ink: oklch(0.85 0.12 86);
-
-  --rule: oklch(0.8 0.05 272 / 0.045);
-  --margin-rule: oklch(0.65 0.17 18 / 0.22);
-
-  --card-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.045), 0 1px 2px oklch(0 0 0 / 0.25),
-    0 14px 30px -18px oklch(0 0 0 / 0.6);
-  --lift-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.3),
-    0 26px 44px -22px oklch(0 0 0 / 0.75);
+  --sidebar: oklch(0.165 0.003 265);
+  --sidebar-foreground: oklch(0.8 0.004 265);
+  --sidebar-border: oklch(0.255 0.005 265);
 
   --chart-1: #3987e5;
   --chart-2: #d95926;
@@ -171,12 +134,6 @@
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-border: var(--sidebar-border);
-  --color-gold: var(--gold);
-  --color-gold-bright: var(--gold-bright);
-  --color-gold-deep: var(--gold-deep);
-  --color-gold-ink: var(--gold-ink);
-  --color-gold-foreground: var(--gold-foreground);
-  --color-ink: var(--ink);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -191,10 +148,6 @@
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
-
-  --shadow-card: var(--card-shadow);
-  --shadow-lift: var(--lift-shadow);
 
   --animate-in-up: rise 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -226,30 +179,10 @@
     background-color: color-mix(in oklch, var(--primary) 22%, transparent);
   }
 
-  .font-display {
-    font-variation-settings: "SOFT" 40;
-  }
-
   /* Numbers in tables and cards line up column-wise. */
   .tabular {
     font-variant-numeric: tabular-nums;
   }
-}
-
-/* Ruled ledger paper — horizontal rules every 32px. */
-@utility bg-ledger {
-  background-image: linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
-  background-size: 100% 32px;
-}
-
-/* A soft top-lit sheen for filled buttons and bars. */
-@utility sheen {
-  background-image: linear-gradient(180deg, oklch(1 0 0 / 0.18), transparent 65%);
-}
-
-/* A brass hairline, for the rule under a heading. */
-@utility gold-rule {
-  background-image: linear-gradient(to right, var(--gold), color-mix(in oklch, var(--gold) 0%, transparent));
 }
 
 @layer utilities {
@@ -281,16 +214,6 @@
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-/* Wipes an element in from the left — used for the allocation bar. */
-@keyframes reveal {
-  from {
-    clip-path: inset(0 100% 0 0 round 9999px);
-  }
-  to {
-    clip-path: inset(0 0 0 0 round 9999px);
   }
 }
 

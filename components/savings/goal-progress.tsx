@@ -12,7 +12,6 @@ import { Progress } from "@/components/ui/progress";
 import { formatPercent } from "@/lib/format";
 import { formatDateLong, parseDateKey } from "@/lib/month";
 import type { SavingsGoalWithProgress } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 function GoalBody({ goal }: { goal: SavingsGoalWithProgress }) {
   const targetDate = parseDateKey(goal.targetDate);
@@ -83,20 +82,14 @@ function GoalBody({ goal }: { goal: SavingsGoalWithProgress }) {
 }
 
 /** Dashboard card — used for the emergency fund. */
-export function GoalProgressCard({
-  goal,
-  highlight = false,
-}: {
-  goal: SavingsGoalWithProgress;
-  highlight?: boolean;
-}) {
+export function GoalProgressCard({ goal }: { goal: SavingsGoalWithProgress }) {
   const Icon = goal.kind === "EMERGENCY" ? ShieldCheck : Target;
 
   return (
-    <Card className={cn(highlight && "ring-1 ring-primary/15")}>
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Icon className="size-4 text-gold-ink" />
+          <Icon className="size-4 text-muted-foreground" />
           {goal.name}
         </CardTitle>
         <CardDescription>
@@ -123,9 +116,9 @@ export function GoalCard({
   const theme = useChartTheme();
 
   return (
-    <article className="flex flex-col rounded-2xl border border-border/80 bg-card p-5 shadow-card transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift">
+    <article className="flex flex-col rounded-xl border border-border bg-card p-5">
       <header className="flex items-start justify-between gap-3">
-        <h3 className="flex min-w-0 items-center gap-2 font-display text-[1.05rem] leading-snug font-semibold">
+        <h3 className="flex min-w-0 items-center gap-2 text-sm font-semibold">
           <ColorDot color={theme.series(goal.color)} />
           <span className="truncate">{goal.name}</span>
           {goal.kind === "EMERGENCY" ? <Badge variant="primary">Emergency</Badge> : null}

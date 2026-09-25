@@ -52,10 +52,10 @@ function InvestmentCard({ investment }: { investment: InvestmentWithTotals }) {
   const theme = useChartTheme();
 
   return (
-    <article className="rounded-2xl border border-border/80 bg-card p-5 shadow-card transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lift">
+    <article className="rounded-xl border border-border bg-card p-5">
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="flex items-center gap-2 font-display text-[1.05rem] leading-snug font-semibold">
+          <h3 className="flex items-center gap-2 text-sm font-semibold">
             <ColorDot color={theme.series(investment.color)} />
             <span className="truncate">{investment.name}</span>
           </h3>

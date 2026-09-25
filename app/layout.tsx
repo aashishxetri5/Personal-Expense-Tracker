@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Geist } from "next/font/google";
+import { Geist } from "next/font/google";
 
 import "./globals.css";
 
@@ -14,18 +14,6 @@ const sans = Geist({
   display: "swap",
 });
 
-/**
- * The display face for headings and hero figures, exposed as `font-display`.
- * Variable, with optical sizing, so it stays sturdy small and refined large.
- */
-const display = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   title: {
     default: "Finance — personal money manager",
@@ -37,8 +25,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbf9f3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0e19" },
+    { media: "(prefers-color-scheme: light)", color: "#fcfcfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e0f11" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -60,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable}`} suppressHydrationWarning>
+    <html lang="en" className={sans.variable} suppressHydrationWarning>
       <body className="min-h-dvh bg-background font-sans antialiased">
         <Providers currency={currency} locale={locale}>
           {children}

@@ -14,6 +14,7 @@ import { AddTransactionButton } from "@/components/transactions/transaction-dial
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { Progress } from "@/components/ui/progress";
 import { CardSkeleton } from "@/components/ui/skeletons";
 import { SLOT } from "@/lib/chart-colors";
@@ -35,8 +36,12 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-6">
-      {/* The banner frame and month title render at once; the figures stream in. */}
-      <Suspense key={params.m ?? "current"} fallback={<DashboardSkeleton month={month} />}>
+      <PageHeader
+        title={formatMonthLabel(month)}
+        description="Your month at a glance."
+      />
+
+      <Suspense key={params.m ?? "current"} fallback={<DashboardSkeleton />}>
         <DashboardContent month={month} />
       </Suspense>
     </div>
@@ -158,7 +163,7 @@ async function DashboardContent({ month }: { month: Date }) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="size-4 text-gold-ink" />
+                <Sparkles className="size-4 text-muted-foreground" />
                 {lifestyle.categoryName}
               </CardTitle>
               <CardDescription>An allowance that rolls over, not a monthly quota.</CardDescription>
@@ -200,12 +205,12 @@ async function DashboardContent({ month }: { month: Date }) {
         ) : null}
 
         {emergency ? (
-          <GoalProgressCard goal={emergency} highlight />
+          <GoalProgressCard goal={emergency} />
         ) : (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="size-4 text-gold-ink" />
+                <Target className="size-4 text-muted-foreground" />
                 Emergency fund
               </CardTitle>
             </CardHeader>
@@ -227,7 +232,7 @@ async function DashboardContent({ month }: { month: Date }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PiggyBank className="size-4 text-gold-ink" />
+              <PiggyBank className="size-4 text-muted-foreground" />
               Future funds
             </CardTitle>
             <CardDescription>
@@ -310,11 +315,11 @@ async function DashboardContent({ month }: { month: Date }) {
   );
 }
 
-/** The dashboard's shape while its data loads: the real banner title, placeholder figures. */
-function DashboardSkeleton({ month }: { month: Date }) {
+/** The dashboard's shape while its data loads; the header is already on screen. */
+function DashboardSkeleton() {
   return (
     <>
-      <MonthHeroSkeleton month={month} />
+      <MonthHeroSkeleton />
       <div className="grid gap-4 lg:grid-cols-5">
         <CardSkeleton variant="chart" chartHeight={208} className="lg:col-span-3" />
         <CardSkeleton variant="bars" rows={5} className="lg:col-span-2" />

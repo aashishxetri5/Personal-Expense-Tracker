@@ -24,15 +24,13 @@ export default function ErrorBoundary({
     /DATABASE_URL|connect|ECONNREFUSED|P1001|P1000|prisma/i.test(error.message);
 
   return (
-    <div className="flex min-h-[60dvh] flex-col items-center justify-center gap-5 text-center">
-      <span className="flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/25">
-        <AlertTriangle className="size-6" />
+    <div className="flex min-h-[60dvh] flex-col items-center justify-center gap-4 text-center">
+      <span className="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+        <AlertTriangle className="size-5" />
       </span>
 
-      <div className="space-y-2">
-        <h1 className="font-display text-3xl leading-tight font-medium tracking-[-0.02em]">
-          Something <em className="text-destructive">jammed</em>
-        </h1>
+      <div className="space-y-1.5">
+        <h1 className="text-lg font-semibold">Something went wrong</h1>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
           {looksLikeDatabase
             ? "The app could not reach the database. Check that DATABASE_URL is set and that migrations have been applied."

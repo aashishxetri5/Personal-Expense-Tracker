@@ -105,7 +105,7 @@ export function MonthSelector({ className }: { className?: string }) {
             {isPending ? (
               <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
             ) : (
-              <CalendarDays className="size-3.5 text-gold-ink" />
+              <CalendarDays className="size-3.5 text-muted-foreground" />
             )}
             {formatMonthLabel(selected)}
           </Button>

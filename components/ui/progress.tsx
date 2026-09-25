@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const indicatorVariants = cva(
-  "sheen h-full w-full flex-1 rounded-full transition-transform duration-500 ease-out",
+  "h-full w-full flex-1 rounded-full transition-transform duration-500 ease-out",
   {
     variants: {
       tone: {
@@ -38,7 +38,7 @@ export function Progress({ value = 0, tone, className, ...props }: ProgressProps
     <ProgressPrimitive.Root
       value={clamped}
       className={cn(
-        "relative h-2 w-full overflow-hidden rounded-full bg-muted shadow-[inset_0_1px_2px_oklch(0.3_0.05_272/0.1)]",
+        "relative h-1.5 w-full overflow-hidden rounded-full bg-muted",
         className,
       )}
       {...props}

@@ -30,25 +30,19 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "relative isolate flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-muted/30 text-center",
+        "flex flex-col items-center justify-center rounded-xl border border-dashed border-border text-center",
         compact ? "gap-2 px-5 py-8" : "gap-3 px-6 py-14",
         className,
       )}
     >
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-ledger [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
-      />
-
       {Icon ? (
-        <div className="relative flex size-11 items-center justify-center rounded-full bg-linear-to-br from-gold-bright/45 to-gold/25 text-gold-ink ring-1 ring-gold/40">
-          <span aria-hidden className="absolute inset-1 rounded-full border border-dashed border-gold/50" />
-          <Icon className="relative size-5" />
+        <div className="flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <Icon className="size-5" />
         </div>
       ) : null}
 
       <div className="space-y-1">
-        <p className="font-display text-[1.05rem] leading-snug font-semibold text-foreground">{title}</p>
+        <p className="text-sm font-medium text-foreground">{title}</p>
         {description ? (
           <p className="mx-auto max-w-sm text-sm text-muted-foreground">{description}</p>
         ) : null}
