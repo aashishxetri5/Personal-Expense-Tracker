@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { signIn } from "@/lib/actions/auth";
+import { cn } from "@/lib/utils";
 
 /**
  * Password form for the single shared login.
@@ -27,6 +28,13 @@ export function LoginForm({ next }: { next?: string }) {
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (pending) return;
+
+    // An empty submit is caught here, so it never counts as a failed attempt.
+    if (password.length === 0) {
+      setError("Enter your password");
+      inputRef.current?.focus();
+      return;
+    }
 
     setPending(true);
     setError(null);
@@ -66,7 +74,10 @@ export function LoginForm({ next }: { next?: string }) {
             autoComplete="current-password"
             autoFocus
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              if (error) setError(null);
+            }}
             onKeyDown={onKey}
             onKeyUp={onKey}
             onBlur={() => setCapsLock(false)}
@@ -86,8 +97,20 @@ export function LoginForm({ next }: { next?: string }) {
         </div>
       </Field>
 
-      <Button type="submit" className="h-10 w-full" loading={pending} disabled={password.length === 0}>
-        Sign in
+      <Button
+        type="submit"
+        loading={pending}
+        className={cn(
+          "group h-11 w-full rounded-lg text-[15px]",
+          "bg-linear-to-b from-primary/80 to-primary",
+          "shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_1px_2px_rgb(0_0_0/0.16),0_6px_16px_-6px_rgb(0_0_0/0.35)]",
+          "transition-[transform,box-shadow] duration-200 hover:-translate-y-px",
+          "hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_2px_4px_rgb(0_0_0/0.16),0_10px_24px_-8px_rgb(0_0_0/0.4)]",
+          "active:translate-y-0",
+        )}
+      >
+        Continue
+        <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
       </Button>
     </form>
   );

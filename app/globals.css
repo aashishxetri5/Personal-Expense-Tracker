@@ -169,6 +169,39 @@
     text-rendering: optimizeLegibility;
   }
 
+  /*
+   * Tailwind v4 leaves buttons on the default arrow. Anything that acts gets
+   * the hand; anything switched off says so; text fields keep the I-beam.
+   */
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemradio"],
+  [role="menuitemcheckbox"],
+  [role="option"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="combobox"],
+  select,
+  summary,
+  label[for],
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  input[type="color"],
+  input[type="file"],
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  :disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
+  }
+
   /* Visible, consistent focus for keyboard users only. */
   :focus-visible {
     outline: 2px solid var(--ring);

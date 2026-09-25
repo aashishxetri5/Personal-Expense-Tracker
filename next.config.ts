@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   // from the selected month and the active filters, so a static route type
   // cannot check them and would only add casts.
 
+  // Hide the floating dev-mode badge; compile and runtime errors still surface.
+  devIndicators: false,
+
   experimental: {
     // Keep visited pages in the client cache for a minute, so going back to a
     // page or a month renders instantly. Every write calls

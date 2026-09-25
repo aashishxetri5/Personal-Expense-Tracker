@@ -23,7 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Sidebar name={user.name} />
           <Topbar name={user.name} />
 
-          <main className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-6 lg:pt-8 lg:pb-14">{children}</main>
+          <main className="w-full px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-14">{children}</main>
 
           <MobileNav />
           <AddTransactionFab />
