@@ -5,7 +5,6 @@ import { SpendingDonut } from "@/components/charts/spending-donut";
 import { TrendLineChart } from "@/components/charts/trend-charts";
 import { BudgetLineList } from "@/components/budget/budget-lines";
 import { MonthHero } from "@/components/dashboard/month-hero";
-import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { FundProgressList } from "@/components/funds/fund-progress";
 import { GoalProgressCard } from "@/components/savings/goal-progress";
 import { Money } from "@/components/money";
@@ -53,11 +52,16 @@ export default async function DashboardPage({
 
   const hasActivity = summary.transactionCount > 0;
 
+  // The lines nearest their limit, rather than the plan in category order.
+  const watchList = [...budget.lines]
+    .filter((line) => line.planned > 0)
+    .sort((a, b) => b.rawProgress - a.rawProgress)
+    .slice(0, 5);
+
   return (
     <div className="space-y-6">
       <MonthHero month={month} summary={summary} plannedTotal={budget.totals.planned} />
 
-      <SummaryCards summary={summary} plannedTotal={budget.totals.planned} />
 
       {!hasActivity && !budget.exists ? (
         <EmptyState
@@ -70,14 +74,14 @@ export default async function DashboardPage({
 
       <div className="grid gap-4 lg:grid-cols-5">
         {/* Where the money went ------------------------------------------- */}
-        <Card className="lg:col-span-3">
+        <Card className="flex flex-col lg:col-span-3">
           <CardHeader>
             <CardTitle>Where the money went</CardTitle>
             <CardDescription>
               Everyday spending plus what you set aside into future funds.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-1 flex-col justify-center">
             {snapshot.spendByCategory.length > 0 ? (
               <SpendingDonut
                 total={summary.spent}
@@ -99,42 +103,23 @@ export default async function DashboardPage({
           </CardContent>
         </Card>
 
-        {/* Budget status --------------------------------------------------- */}
+        {/* Watch list ------------------------------------------------------ */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Budget</CardTitle>
+            <CardTitle>Watch list</CardTitle>
             <CardDescription>
-              {budget.exists ? (
-                <>
-                  <Money value={budget.totals.actual} className="font-medium text-foreground" /> of{" "}
-                  <Money value={budget.totals.planned} /> planned
-                </>
-              ) : (
-                "No budget set for this month"
-              )}
+              {budget.exists ? "The budget lines closest to their limit." : "No budget set for this month"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {budget.exists ? (
               <>
-                <Progress
-                  value={budget.totals.progress}
-                  tone={
-                    budget.totals.rawProgress > 100
-                      ? "danger"
-                      : budget.totals.rawProgress > 85
-                        ? "warning"
-                        : "default"
-                  }
-                />
-                <BudgetLineList lines={budget.lines.slice(0, 6)} />
-                {budget.lines.length > 6 ? (
-                  <Button variant="outline" size="sm" className="w-full" asChild>
-                    <Link href={`/budget?m=${monthKey}`}>
-                      See all {budget.lines.length} lines <ArrowRight />
-                    </Link>
-                  </Button>
-                ) : null}
+                <BudgetLineList lines={watchList} />
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href={`/budget?m=${monthKey}`}>
+                    See all {budget.lines.length} lines <ArrowRight />
+                  </Link>
+                </Button>
               </>
             ) : (
               <EmptyState

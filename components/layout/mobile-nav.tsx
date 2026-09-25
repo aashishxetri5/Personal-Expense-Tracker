@@ -13,7 +13,7 @@ export function MobileNav() {
     // A floating ink dock; `dark` keeps it ink in both themes, like the sidebar.
     <nav
       aria-label="Primary"
-      className="dark fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 overflow-hidden rounded-2xl border border-sidebar-border bg-sidebar/95 text-foreground shadow-[0_18px_40px_-12px_oklch(0.12_0.03_272/0.55)] backdrop-blur-md lg:hidden"
+      className="dark fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 overflow-hidden rounded-2xl border border-sidebar-border bg-sidebar text-foreground shadow-[0_18px_40px_-12px_oklch(0.12_0.03_272/0.55)] lg:hidden"
     >
       <ul className="grid grid-cols-4">
         {MOBILE_NAV_ITEMS.map((item) => {

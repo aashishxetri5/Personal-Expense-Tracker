@@ -17,13 +17,14 @@ export type PageHeaderProps = {
  * @param props - The title text.
  * @returns The title's inline content.
  */
-export function AccentTitle({ title }: { title: string }) {
+export function AccentTitle({ title, italic = true }: { title: string; italic?: boolean }) {
+  const accent = italic ? "text-gold-ink" : "text-gold-ink not-italic";
   const split = title.lastIndexOf(" ");
-  if (split === -1) return <em className="text-gold-ink">{title}</em>;
+  if (split === -1) return <em className={accent}>{title}</em>;
 
   return (
     <>
-      {title.slice(0, split)} <em className="text-gold-ink">{title.slice(split + 1)}</em>
+      {title.slice(0, split)} <em className={accent}>{title.slice(split + 1)}</em>
     </>
   );
 }

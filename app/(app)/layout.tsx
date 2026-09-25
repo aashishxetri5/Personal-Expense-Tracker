@@ -15,8 +15,8 @@ function PaperBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 bg-ledger [mask-image:linear-gradient(to_bottom,black,transparent_90%)]" />
-      <div className="absolute -top-48 -right-40 size-[38rem] rounded-full bg-primary/10 blur-3xl dark:bg-primary/15" />
-      <div className="absolute top-[35%] -right-56 size-[30rem] rounded-full bg-gold/10 blur-3xl dark:bg-gold/[0.06]" />
+      {/* Gradients, not blur filters: they cost nothing to repaint while scrolling. */}
+      <div className="absolute inset-0 bg-[radial-gradient(44rem_32rem_at_100%_0%,color-mix(in_oklch,var(--primary)_9%,transparent),transparent_70%),radial-gradient(34rem_28rem_at_100%_45%,color-mix(in_oklch,var(--gold)_9%,transparent),transparent_70%)]" />
       {/* The double margin rule of an accounting book, along the sidebar's edge. */}
       <div className="absolute inset-y-0 left-64 ml-1.5 hidden w-[5px] border-x border-[var(--margin-rule)] lg:block" />
     </div>

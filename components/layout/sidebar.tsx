@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { MONTH_AWARE_ROUTES, NAV_SECTIONS, isActiveRoute } from "@/components/layout/nav-config";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,11 @@ import { cn } from "@/lib/utils";
 /**
  * A nav link that carries the selected month across pages, so moving between
  * screens keeps you in the same month.
+ *
+ * Every page is dynamic, so the default prefetch only fetches the loading
+ * skeleton. Instead the full page is prefetched the moment a pointer or focus
+ * lands on the link — usually long enough before the click for the page to be
+ * ready, without rendering every page on every load.
  *
  * @param props - Link props plus an optional navigation callback.
  * @returns The link, with the month appended where the route supports it.
@@ -21,12 +26,22 @@ export function MonthAwareLink({
   onNavigate,
   ...props
 }: React.ComponentProps<typeof Link> & { href: string; onNavigate?: () => void }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const month = searchParams.get("m");
   const target = month && MONTH_AWARE_ROUTES.has(href) ? `${href}?m=${month}` : href;
+  const prefetch = () => router.prefetch(target);
 
   return (
-    <Link href={target} className={className} onClick={onNavigate} {...props}>
+    <Link
+      href={target}
+      className={className}
+      onClick={onNavigate}
+      onPointerEnter={prefetch}
+      onFocus={prefetch}
+      onTouchStart={prefetch}
+      {...props}
+    >
       {children}
     </Link>
   );
@@ -105,8 +120,7 @@ export function SidebarBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-ledger [mask-image:linear-gradient(to_bottom,black,transparent_75%)]" />
-      <div className="absolute -top-28 -left-24 size-72 rounded-full bg-primary/25 blur-3xl" />
-      <div className="absolute -right-28 -bottom-28 size-64 rounded-full bg-gold/10 blur-3xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(22rem_20rem_at_0%_0%,color-mix(in_oklch,var(--primary)_24%,transparent),transparent_70%),radial-gradient(20rem_18rem_at_100%_100%,color-mix(in_oklch,var(--gold)_10%,transparent),transparent_70%)]" />
     </div>
   );
 }

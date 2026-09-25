@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { VaultDial } from "@/components/brand/vault-dial";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
@@ -10,9 +9,11 @@ export default function NotFound() {
         aria-hidden
         className="absolute inset-0 -z-10 bg-ledger [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
       />
-      <VaultDial turns={4} className="size-32" />
+      <p aria-hidden className="font-display text-[6rem] leading-none font-semibold tracking-[-0.05em] text-gold-ink italic">
+        404
+      </p>
       <div className="space-y-2">
-        <h1 className="font-display text-4xl leading-tight">
+        <h1 className="font-display text-3xl leading-tight font-medium tracking-[-0.02em]">
           Not in the <em className="text-gold-ink">ledger</em>
         </h1>
         <p className="max-w-sm text-sm text-muted-foreground">

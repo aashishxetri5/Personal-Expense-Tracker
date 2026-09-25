@@ -52,24 +52,33 @@ export function MonthSelector({ className }: { className?: string }) {
     if (open) setPickerYear(selected.getUTCFullYear());
   }, [open, selected]);
 
-  const navigate = React.useCallback(
+  const hrefFor = React.useCallback(
     (month: Date) => {
       const params = new URLSearchParams(searchParams.toString());
-      const key = toMonthKey(month);
 
       if (isSameMonth(month, currentMonth())) params.delete("m");
-      else params.set("m", key);
+      else params.set("m", toMonthKey(month));
 
       // Changing month always returns to the first page of any list.
       params.delete("page");
 
       const query = params.toString();
+      return query ? `${pathname}?${query}` : pathname;
+    },
+    [pathname, searchParams],
+  );
+
+  const navigate = React.useCallback(
+    (month: Date) => {
       startTransition(() => {
-        router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+        router.push(hrefFor(month), { scroll: false });
       });
     },
-    [pathname, router, searchParams],
+    [hrefFor, router],
   );
+
+  /** Fetch a neighbouring month as soon as the pointer heads for its arrow. */
+  const prefetch = (month: Date) => () => router.prefetch(hrefFor(month));
 
   const isCurrent = isSameMonth(selected, currentMonth());
 
@@ -79,6 +88,8 @@ export function MonthSelector({ className }: { className?: string }) {
         variant="ghost"
         size="icon-sm"
         onClick={() => navigate(addMonths(selected, -1))}
+        onPointerEnter={prefetch(addMonths(selected, -1))}
+        onFocus={prefetch(addMonths(selected, -1))}
         aria-label={`Go to ${formatMonthLabel(addMonths(selected, -1))}`}
       >
         <ChevronLeft />
@@ -172,6 +183,8 @@ export function MonthSelector({ className }: { className?: string }) {
         variant="ghost"
         size="icon-sm"
         onClick={() => navigate(addMonths(selected, 1))}
+        onPointerEnter={prefetch(addMonths(selected, 1))}
+        onFocus={prefetch(addMonths(selected, 1))}
         aria-label={`Go to ${formatMonthLabel(addMonths(selected, 1))}`}
       >
         <ChevronRight />

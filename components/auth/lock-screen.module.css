@@ -68,10 +68,10 @@
   mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
 }
 
+/* Soft light as radial gradients — a blur filter this size costs a full repaint. */
 .glow {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(90px);
   animation: drift 24s ease-in-out infinite alternate;
 }
 
@@ -80,7 +80,7 @@
   height: 44rem;
   top: -18rem;
   left: -14rem;
-  background: var(--glow-a);
+  background: radial-gradient(closest-side, var(--glow-a), transparent);
 }
 
 .glowB {
@@ -88,7 +88,7 @@
   height: 38rem;
   right: -12rem;
   bottom: -14rem;
-  background: var(--glow-b);
+  background: radial-gradient(closest-side, var(--glow-b), transparent);
   animation-direction: alternate-reverse;
   animation-duration: 30s;
 }
@@ -177,7 +177,7 @@
   position: absolute;
   width: calc(var(--size) * 0.62);
   aspect-ratio: 1;
-  filter: blur(var(--blur, 0px)) drop-shadow(0 8px 10px oklch(0.35 0.08 70 / 0.22));
+  filter: blur(var(--blur, 0px));
   animation: bob var(--bob, 10s) ease-in-out var(--delay, 0s) infinite alternate;
 }
 

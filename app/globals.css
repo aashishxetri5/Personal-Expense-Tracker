@@ -284,6 +284,16 @@
   }
 }
 
+/* Wipes an element in from the left — used for the allocation bar. */
+@keyframes reveal {
+  from {
+    clip-path: inset(0 100% 0 0 round 9999px);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 9999px);
+  }
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);

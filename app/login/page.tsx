@@ -105,7 +105,7 @@ export default async function LoginPage({
                 key={feature.href}
                 className={cn(
                   styles.enter,
-                  "inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/60 px-3 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur-sm",
+                  "inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/60 px-3 py-1.5 text-xs font-medium text-foreground/80",
                 )}
                 style={{ "--i": 3 + i * 0.5 } as React.CSSProperties}
               >
@@ -120,7 +120,7 @@ export default async function LoginPage({
           className={cn(
             styles.card,
             styles.enter,
-            "relative mt-[82px] w-full max-w-[400px] justify-self-center rounded-[1.75rem] bg-card/75 px-6 pb-6 backdrop-blur-xl sm:mt-[92px] sm:px-8 sm:pb-7 dark:bg-card/60",
+            "relative mt-[82px] w-full max-w-[400px] justify-self-center rounded-[1.75rem] bg-card px-6 pb-6 sm:mt-[92px] sm:px-8 sm:pb-7",
           )}
           style={{ "--i": 1 } as React.CSSProperties}
         >

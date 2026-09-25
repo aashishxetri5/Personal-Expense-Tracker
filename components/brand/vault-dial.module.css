@@ -9,7 +9,6 @@
   --halo: color-mix(in oklch, var(--gold) 42%, transparent);
   position: relative;
   flex: none;
-  container-type: inline-size;
   filter: drop-shadow(0 22px 26px oklch(0.2 0.06 272 / 0.35));
 }
 
@@ -114,14 +113,6 @@
   place-items: center;
   color: var(--gold-bright);
   transition: color 0.3s ease;
-}
-
-/* A short figure in place of the lock, when the dial is used as a gauge. */
-.label {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-size: 15cqi;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
 }
 
 .hub svg {

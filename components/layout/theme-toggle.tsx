@@ -2,54 +2,49 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
-const OPTIONS = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
-] as const;
-
+/**
+ * One button that flips between light and dark. A first visit follows the
+ * device; the first click pins an explicit choice.
+ *
+ * @returns The theme toggle.
+ */
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // The server cannot know the resolved theme, so the icon is only rendered
-  // after hydration to avoid a flash of the wrong glyph.
+  // The server cannot know the resolved theme, so the icons only settle after
+  // hydration; until then both stay hidden rather than flashing the wrong one.
   React.useEffect(() => setMounted(true), []);
 
+  const isDark = mounted && resolvedTheme === "dark";
+  const label = isDark ? "Switch to light theme" : "Switch to dark theme";
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Change theme">
-          {mounted && theme === "dark" ? (
-            <Moon className="size-4" />
-          ) : mounted && theme === "light" ? (
-            <Sun className="size-4" />
-          ) : (
-            <Monitor className="size-4" />
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40">
-        <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-        {OPTIONS.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onSelect={() => setTheme(option.value)}
-            className="justify-between"
-          >
-            <span className="flex items-center gap-2">
-              <option.icon />
-              {option.label}
-            </span>
-            {mounted && theme === option.value ? <Check className="size-3.5" /> : null}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={label}
+      title={label}
+      className="relative overflow-hidden"
+    >
+      <Sun
+        className={cn(
+          "absolute transition-[transform,opacity] duration-300",
+          mounted && isDark ? "scale-100 rotate-0 opacity-100" : "scale-50 -rotate-90 opacity-0",
+        )}
+      />
+      <Moon
+        className={cn(
+          "absolute transition-[transform,opacity] duration-300",
+          mounted && !isDark ? "scale-100 rotate-0 opacity-100" : "scale-50 rotate-90 opacity-0",
+        )}
+      />
+    </Button>
   );
 }

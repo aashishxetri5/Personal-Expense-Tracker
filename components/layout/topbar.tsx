@@ -23,7 +23,7 @@ export function Topbar({ name }: { name: string }) {
   const showMonth = MONTH_AWARE_ROUTES.has(current?.href ?? pathname);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/75 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-border/70 bg-background">
       <div className="flex h-14 items-center gap-2 px-4 sm:px-6">
         {/* Mobile menu -------------------------------------------------- */}
         <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
